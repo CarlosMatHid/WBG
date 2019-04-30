@@ -178,7 +178,7 @@ contains
         self%c4 = 0.084852._dl   !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         self%c5 = 0._dl          !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         self%c2 = 3._dl - 6._dl*self%c4 - 24._dl*self%c5 + 12._dl*self%c4*self%p + 24._dl*self%c4*self%q                      !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        self%c3 = (sqrt(2._dl)*self%p)/(-1._dl + 2._dl*self%p + 2._dl*self%q) - (4._dl*sqrt(2._dl)*self%c4*self%p)/(-1._dl + 2._dl*self%p + 2._dl*self%q) - ( 16._dl*sqrt(2._dl)*self%WBGalileon_c5*self%p)/(-1._dl + 2._dl*self%p + 2._dl*self%q) + ( 8._dl*sqrt(2._dl)*self%c4*self%p**2._dl)/(-1._dl + 2._dl**self%p + 2._dl*self%q) -( 4._dl*sqrt(2._dl)*self%c4*self%q)/(-1._dl + 2._dl*self%p + 2._dl*self%q) - ( 16._dl*sqrt(2._dl)*self%c5*self%q)/(-1._dl + 2._dl*self%p + 2._dl*self%q) + ( 24._dl*sqrt(2._dl)*self%c4*self%p*self%q)/(-1._dl + 2._dl*self%p + 2._dl*self%q) + ( 16*sqrt(2._dl)*self%c4*self%q**2._dl)/(-1._dl + 2._dl*self%p + 2._dl*self%q)  !@@@@@@@@@@@@@@@@@@@
+        self%c3 = (sqrt(2._dl)*self%p)/(-1._dl + 2._dl*self%p + 2._dl*self%q) - (4._dl*sqrt(2._dl)*self%c4*self%p)/(-1._dl + 2._dl*self%p + 2._dl*self%q) -& &( 16._dl*sqrt(2._dl)*self%WBGalileon_c5*self%p)/(-1._dl + 2._dl*self%p + 2._dl*self%q) + ( 8._dl*sqrt(2._dl)*self%c4*self%p**2._dl)/(-1._dl + 2._dl**self%p + 2._dl*self%q) &-&( 4._dl*sqrt(2._dl)*self%c4*self%q)/(-1._dl + 2._dl*self%p + 2._dl*self%q) - ( 16._dl*sqrt(2._dl)*self%c5*self%q)/(-1._dl + 2._dl*self%p + 2._dl*self%q) +& &( 24._dl*sqrt(2._dl)*self%c4*self%p*self%q)/(-1._dl + 2._dl*self%p + 2._dl*self%q) + ( 16*sqrt(2._dl)*self%c4*self%q**2._dl)/(-1._dl + 2._dl*self%p + 2._dl*self%q)  !@@@@@@@@@@@@@@@@@@@
 
         self%Hds = eft_par_cache%h0_Mpc*(1-( eft_par_cache%omegac +eft_par_cache%omegab + eft_par_cache%omegag +eft_par_cache%omegar) )**(1/(2+2*self%s))
 
@@ -248,9 +248,22 @@ contains
          real(dl) :: rhonu, presnu, grhormass_t,presnudotdotdot,presnudotdot,presnudot,
          real(dl) :: adotoa, Hdot,Hdotdot,Hddd, Hdddd
 
-         real(dl) :: adotoaPrime, adotoaPrimePrime, adotoaPrimePrimePrime!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-         real(dl) :: Phi, PhiPrime, PhiPrimePrime, PhiPrimePrimePrime, PhiPrimePrimePrimePrime, m0, a2, c3
+         real(dl) :: adotoaPrime, adotoaPrimePrime, adotoaPrimePrimePrime !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+         real(dl) :: Phi, PhiPrime, PhiPrimePrime, PhiPrimePrimePrime, PhiPrimePrimePrimePrime, m0, a2
          integer  :: nu_i
+
+         real(dl) :: s, p, XDS, c2, c3, c4, c5, Hds      !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+         s = self%s                                      !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+         p = self%p                                      !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+         XDS = self%XDS                                  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+         c2 = self%c2                                    !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+         c3 = self%c3                                    !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+         c4 = self%c4                                    !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+         c5 = self%c5                                    !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        
+         Hds = self%Hds                                  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
          a = Exp(x)
          a2 = a*a
@@ -273,10 +286,51 @@ contains
          end if
 
          !Omega_tot = ( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-3) + ( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-4) +rhonu_tot/(3._dl*eft_par_cache%h0_Mpc**2*a2) !@@@@@@@@@@
-         adotoa =  ! solve numerical equation  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-         adotoaPrime =   !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-         adotoaPrimePrime =   !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-         adotoaPrimePrimePrime =   !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+         adotoa = 7.837410259793203e-9*Sqrt(6.77248681876e11/a**2 + 2.385022401318125e15/a + (114122.79839278391*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**2) ! solve numerical equation  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+         adotoaPrime = (3.918705129896602e-9*(-1.354497363752e12/a**3 - 2.385022401318125e15/a**2 + (57061.399196391954*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7))/&
+     &       (a**2*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)) - &
+    &       (228245.59678556782*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**3))/&
+    &   Sqrt(6.77248681876e11/a**2 + 2.385022401318125e15/a + (114122.79839278391*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**2)  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+         adotoaPrimePrime = (-1.959352564948301e-9*(-1.354497363752e12/a**3 - 2.385022401318125e15/a**2 + (57061.399196391954*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7))/&
+     &         (a**2*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)) - &
+     &        (228245.59678556782*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**3)**2)/&
+     &   (6.77248681876e11/a**2 + 2.385022401318125e15/a + (114122.79839278391*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**2)**1.5 + &
+     &  (3.918705129896602e-9*(4.063492091256e12/a**4 + 4.77004480263625e15/a**3 - (28530.699598195977*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7)**2)/&
+     &        (a**2*(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)**1.5) + &
+     &       (57061.399196391954*(8.735144544827633e20 + 8.056031963875e23*a**6))/(a**2*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 +& 1.43857713640625e22*a**8)) - 
+     &       (228245.59678556782*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7))/&
+     &        (a**3*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)) + &
+     &       (684736.7903567035*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**4))/&
+     &   Sqrt(6.77248681876e11/a**2 + 2.385022401318125e15/a + (114122.79839278391*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**2)  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        
+ adotoaPrimePrimePrime =  (2.9390288474224514e-9*(-1.354497363752e12/a**3 - 2.385022401318125e15/a**2 + (57061.399196391954*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7))/&
+     &         (a**2*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)) - &
+     &        (228245.59678556782*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**3)**3)/&
+     &   (6.77248681876e11/a**2 + 2.385022401318125e15/a + (114122.79839278391*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**2)**2.5 - &
+     &  (5.878057694844903e-9*(4.063492091256e12/a**4 + 4.77004480263625e15/a**3 - (28530.699598195977*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7)**2)/&
+     &        (a**2*(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)**1.5) + &
+     &       (57061.399196391954*(8.735144544827633e20 + 8.056031963875e23*a**6))/(a**2*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)) - &
+     &       (228245.59678556782*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7))/&
+     &        (a**3*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)) + &
+     &       (684736.7903567035*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**4)*&
+     &     (-1.354497363752e12/a**3 - 2.385022401318125e15/a**2 + (57061.399196391954*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7))/&
+     &        (a**2*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)) - &
+     &       (228245.59678556782*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**3))/&
+     &   (6.77248681876e11/a**2 + 2.385022401318125e15/a + (114122.79839278391*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**2)**1.5 + &
+     &  (3.918705129896602e-9*(-1.6253968365024e13/a**5 - 1.431013440790875e16/a**4 + (42796.049397293966*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7)**3)/&
+     &        (a**2*(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)**2.5) - &
+     &       (85592.09879458793*(8.735144544827633e20 + 8.056031963875e23*a**6)*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7))/&
+     &        (a**2*(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)**1.5) + &
+     &       (171184.19758917586*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7)**2)/&
+     &        (a**3*(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)**1.5) + &
+     &       (2.7581307349773892e29*a**3)/Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8) - &
+     &       (342368.3951783517*(8.735144544827633e20 + 8.056031963875e23*a**6))/(a**3*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)) +      &
+     &       (1.0271051855350551e6*(2.48042329737085e17 + 8.735144544827633e20*a + 1.150861709125e23*a**7))/&
+     &        (a**4*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8)) - &
+     &       (2.738947161426814e6*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**5))/&
+     &   Sqrt(6.77248681876e11/a**2 + 2.385022401318125e15/a + (114122.79839278391*Sqrt(3.5216931457552e13 + 2.48042329737085e17*a + 4.367572272413816e20*a**2 + 1.43857713640625e22*a**8))/a**2)  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
          
          !Omega_phi0 = eft_par_cache%omegav
@@ -346,14 +400,17 @@ contains
         !Omega_tot_primeprimeprime = -60._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-6) -120._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-7)&
                     & +(-20._dl*(rhonu_tot+presnu_tot) + (6._dl/adotoa +Hdot/adotoa**3)*presnudot_tot  -1._dl/adotoa**2*presnudotdot_tot)/(eft_par_cache%h0_Mpc**2*a**5)
 
-        Hddd = a*adotoa**3*adotoaPrime + 4*a**2*adotoa**2*adotoaPrime**2 + a**3*adotoa*adotoaPrime**3 + 3*a**2*adotoa**3*adotoaPrimePrime + 4*a**3*adotoa**2*adotoaPrime*adotoaPrimePrime + a**3*adotoa**3*adotoaPrimePrimePrime
+        Hddd = a*adotoa**3*adotoaPrime + 4*a**2*adotoa**2*adotoaPrime**2 + a**3*adotoa*adotoaPrime**3 + 3*a**2*adotoa**3*adotoaPrimePrime + 4*a**3*adotoa**2*adotoaPrime*adotoaPrimePrime +&
+& a**3*adotoa**3*adotoaPrimePrimePrime
 
         !Omega_tot_primeprimeprimeprime = 360._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-7) +840._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-8)&
                     & +(120._dl*(rhonu_tot+presnu_tot) + (-38._dl/adotoa -9._dl*Hdot/adotoa**3 +Hdotdot/adotoa**4 &
                     & -3._dl*Hdot**2/adotoa**5 )*presnudot_tot +presnudotdot_tot*( 9._dl/adotoa**2 +3._dl*Hdot/adotoa**4 )&
                     & -presnudotdotdot_tot/adotoa**3)/(eft_par_cache%h0_Mpc**2*a**6)
 
-        Hdddd = a*adotoa**4*adotoaPrime + 11*a**2*adotoa**3*adotoaPrime**2 + 11*a**3*adotoa**2*adotoaPrime**3 + a**4*adotoa*adotoaPrime**4 + 7*a**2*adotoa**4*adotoaPrimePrime + 9*a**3*adotoa**3*adotoaPrime*adotoaPrimePrime + 11*a**4*adotoa**2*adotoaPrime**2*adotoaPrimePrime + 4*a**4*adotoa**3*adotoaPrimePrime**2 + 6*a**3*adotoa**4*adotoaPrimePrimePrime + 7*a**4*adotoa**3*adotoaPrime*adotoaPrimePrimePrime + a**4*adotoa**4*adotoaPrimePrimePrimePrime
+        Hdddd = a*adotoa**4*adotoaPrime + 11*a**2*adotoa**3*adotoaPrime**2 + 11*a**3*adotoa**2*adotoaPrime**3 + a**4*adotoa*adotoaPrime**4 + 7*a**2*adotoa**4*adotoaPrimePrime + &
+&9*a**3*adotoa**3*adotoaPrime*adotoaPrimePrime + 11*a**4*adotoa**2*adotoaPrime**2*adotoaPrimePrime + 4*a**4*adotoa**3*adotoaPrimePrime**2 + 6*a**3*adotoa**4*adotoaPrimePrimePrime + &
+&7*a**4*adotoa**3*adotoaPrime*adotoaPrimePrimePrime + a**4*adotoa**4*adotoaPrimePrimePrimePrime
 
 
           if ( a == 0._dl ) then
@@ -394,7 +451,8 @@ contains
 
           ChiPrimePrime = (2*s*Chi*(-((p - 2*s)*adotoa**2) + a**2*(p + 2*s)*adotoaPrime**2 - a*adotoa*(4*s*adotoaPrime + a*p*adotoaPrimePrime)))/(a**2*p**2*adotoa**2)!@@@@@@@@@@@@@@@@
 
-          ChiPrimePrimePrime = (2*s*Chi*(2*(p**2 - 3*p*s + 2*s**2)*adotoa**3 - 2*a**3*(p**2 + 3*p*s + 2*s**2)*adotoaPrime**3 + 3*a**2*(p + 2*s)*adotoa*adotoaPrime*(2*s*adotoaPrime + a*p*adotoaPrimePrime) - a*adotoa**2*(-6*(p - 2*s)*s*adotoaPrime + a*p*(6*s*adotoaPrimePrime + a*p*adotoaPrimePrimePrime))))/(a**3*p**3*adotoa**3)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+          ChiPrimePrimePrime = (2*s*Chi*(2*(p**2 - 3*p*s + 2*s**2)*adotoa**3 - 2*a**3*(p**2 + 3*p*s + 2*s**2)*adotoaPrime**3 + 3*a**2*(p + 2*s)*adotoa*adotoaPrime*(2*s*adotoaPrime +&
+& a*p*adotoaPrimePrime) - a*adotoa**2*(-6*(p - 2*s)*s*adotoaPrime + a*p*(6*s*adotoaPrimePrime + a*p*adotoaPrimePrimePrime))))/(a**3*p**3*adotoa**3)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
           !ChiPrimePrimePrimePrime = (2*s*Chi*((-6*p**3 + 22*p**2*s - 24*p*s**2 + 8*s**3)*adotoa**4 + 2*a**4*(3*p**3 + 11*p**2*s + 12*p*s**2 + 4*s**3)*adotoaPrime**4 -4*a**3*(p**2 + 3*p*s + 2*s**2)*adotoa*adotoaPrime**2*(4*s*adotoaPrime + 3*a*p*adotoaPrimePrime) + a**2*(p + 2*s)*adotoa**2*(-12*(p - 2*s)*s*adotoaPrime**2 + 3*a**2*p**2*adotoaPrimePrime**2 + 4*a*p*adotoaPrime*(6*s*adotoaPrimePrime + a*p*adotoaPrimePrimePrime)) - a*adotoa**3*(16*s*(p**2 - 3*p*s + 2*s**2)*adotoaPrime + a*p*(-12*(p - 2*s)*s*adotoaPrimePrime +  a*p*(8*s*adotoaPrimePrimePrime + a*p*adotoaPrimePrimePrimePrime)))))/(a**4*p**4*adotoa**4)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
           
@@ -402,49 +460,169 @@ contains
 
           PhiPrimePrime = (2*Chi*adotoaPrime - adotoa*ChiPrime)/(2.*adotoa**2*Sqrt(-Chi))           !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-          PhiPrimePrimePrime =  -(adotoa**2*ChiPrime**2 + Chi**2*(-8*adotoaPrime**2 + 4*adotoa*adotoaPrimePrime) - 2*adotoa*Chi*(-2*adotoaPrime*ChiPrime + adotoa*ChiPrimePrime))/(4.*adotoa**3*(-Chi)**1.5)           !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+          PhiPrimePrimePrime =  -(adotoa**2*ChiPrime**2 + Chi**2*(-8*adotoaPrime**2 + 4*adotoa*adotoaPrimePrime) - 2*adotoa*Chi*(-2*adotoaPrime*ChiPrime + adotoa*ChiPrimePrime))&
+&/(4.*adotoa**3*(-Chi)**1.5)           !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-          PhiPrimePrimePrimePrime =  (-3*adotoa**3*ChiPrime**3 + 6*adotoa**2*Chi*ChiPrime*(-(adotoaPrime*ChiPrime) + adotoa*ChiPrimePrime) + 8*Chi**3*(6*adotoaPrime**3 - 6*adotoa*adotoaPrime*adotoaPrimePrime + adotoa**2*adotoaPrimePrimePrime) - 4*adotoa*Chi**2*(6*adotoaPrime**2*ChiPrime - 3*adotoa*adotoaPrime*ChiPrimePrime + adotoa*(-3*ChiPrime*adotoaPrimePrime + adotoa*ChiPrimePrimePrime)))/(8.*adotoa**4*(-Chi)**2.5)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+          PhiPrimePrimePrimePrime =  (-3*adotoa**3*ChiPrime**3 + 6*adotoa**2*Chi*ChiPrime*(-(adotoaPrime*ChiPrime) + adotoa*ChiPrimePrime) + 8*Chi**3*(6*adotoaPrime**3 -&
+& 6*adotoa*adotoaPrime*adotoaPrimePrime + adotoa**2*adotoaPrimePrimePrime) - 4*adotoa*Chi**2*(6*adotoaPrime**2*ChiPrime - 3*adotoa*adotoaPrime*ChiPrimePrime +&
+& adotoa*(-3*ChiPrime*adotoaPrimePrime + adotoa*ChiPrimePrimePrime)))/(8.*adotoa**4*(-Chi)**2.5)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
          ! compute the background EFT functions:
           
          ! -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
          ! modification starts
          ! -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-          self%EFTOmega%y(ind)    = -1 - (2*c4*adotoa**((2*p*(1 + s))/s)*PhiPrime**((2*p*(1 + s))/s))/((-1)**(p*(1 + 1/s))*XDS**(p*(1 + 1/s)))
+          self%EFTOmega%y(ind)    = -1 - (2*c4*adotoa**((2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s))/((-1)**((p*(2 + s))/s)*XDS**((p*(2 + s))/s))
 
-          self%EFTOmega%yp(ind)    = (-4*c4*p*(1 + s)*adotoa**(-1 + (2*p*(1 + s))/s)*PhiPrime**(-1 + (2*p*(1 + s))/s)*(adotoa*PhiPrimePrime + PhiPrime*adotoaPrime))/((-1)**(p*(1 + 1/s))*s*XDS**(p*(1 + 1/s)))
+          self%EFTOmega%yp(ind)    = (-4*c4*p*(2 + s)*adotoa**(-1 + (2*p*(2 + s))/s)*PhiPrime**(-1 + (2*p*(2 + s))/s)*(adotoa*PhiPrimePrime + PhiPrime*adotoaPrime))/((-1)**((p*(2 + s))&
+&/s)*s*XDS**((p*(2 + s))/s))
 
-          self%EFTOmega%ypp(ind)   = (-4*c4*p*(1 + s)*adotoa**(-2 + (2*p*(1 + s))/s)*PhiPrime**(-2 + (2*p*(1 + s))/s)*(adotoa**2*((-s + 2*p*(1 + s))*PhiPrimePrime**2 + s*PhiPrime*PhiPrimePrimePrime) + (-s + 2*p*(1 + s))*PhiPrime**2*adotoaPrime**2 + adotoa*PhiPrime*(4*p*(1 + s)*PhiPrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrime)))/((-1)**(p*(1 + 1/s))*s**2*XDS**(p*(1 + 1/s)))
+          self%EFTOmega%ypp(ind)   =  (-4*c4*p*(2 + s)*adotoa**(-2 + (2*p*(2 + s))/s)*PhiPrime**(-2 + (2*p*(2 + s))/s)*&
+     &    (adotoa**2*((-s + 2*p*(2 + s))*PhiPrimePrime**2 + s*PhiPrime*PhiPrimePrimePrime) + (-s + 2*p*(2 + s))*PhiPrime**2*adotoaPrime**2 + &
+     &      adotoa*PhiPrime*(4*p*(2 + s)*PhiPrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrime)))/((-1)**((p*(2 + s))/s)*s**2*XDS**((p*(2 + s))/s))&
 
-          self%EFTOmega%yppp(ind)  = (-4*c4*p*(1 + s)*adotoa**(-3 + (2*p*(1 + s))/s)*PhiPrime**(-3 + (2*p*(1 + s))/s)*(adotoa**3*(2*(s**2 - 3*p*s*(1 + s) + 2*p**2*(1 + s)**2)*PhiPrimePrime**3 + 3*s*(-s + 2*p*(1 + s))*PhiPrime*PhiPrimePrime*PhiPrimePrimePrime + s**2*PhiPrime**2*PhiPrimePrimePrimePrime) + 2*(s**2 - 3*p*s*(1 + s) + 2*p**2*(1 + s)**2)*PhiPrime**3*adotoaPrime**3 + 3*(-s + 2*p*(1 + s))*adotoa*PhiPrime**2*adotoaPrime*(2*p*(1 + s)*PhiPrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrime) + adotoa**2*PhiPrime*(6*p*(1 + s)*(-s + 2*p*(1 + s))*PhiPrimePrime**2*adotoaPrime + 6*p*s*(1 + s)*PhiPrime*PhiPrimePrime*adotoaPrimePrime + s*PhiPrime*(6*p*(1 + s)*PhiPrimePrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrimePrime))))/((-1)**(p*(1 + 1/s))*s**3*XDS**(p*(1 + 1/s)))
+          self%EFTOmega%yppp(ind)  = (-4*c4*p*(2 + s)*adotoa**(-3 + (2*p*(2 + s))/s)*PhiPrime**(-3 + (2*p*(2 + s))/s)*&
+     &    (adotoa**3*(2*(s**2 - 3*p*s*(2 + s) + 2*p**2*(2 + s)**2)*PhiPrimePrime**3 + 3*s*(-s + 2*p*(2 + s))*PhiPrime*PhiPrimePrime*PhiPrimePrimePrime +
+     &         s**2*PhiPrime**2*PhiPrimePrimePrimePrime) + 2*(s**2 - 3*p*s*(2 + s) + 2*p**2*(2 + s)**2)*PhiPrime**3*adotoaPrime**3 + & 
+     &      3*(-s + 2*p*(2 + s))*adotoa*PhiPrime**2*adotoaPrime*(2*p*(2 + s)*PhiPrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrime) + & 
+     &      adotoa**2*PhiPrime*(6*p*(2 + s)*(-s + 2*p*(2 + s))*PhiPrimePrime**2*adotoaPrime + 6*p*s*(2 + s)*PhiPrime*PhiPrimePrime*adotoaPrimePrime + & 
+     &         s*PhiPrime*(6*p*(2 + s)*PhiPrimePrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrimePrime))))/((-1)**((p*(2 + s))/s)*s**3*XDS**((p*(2 + s))/s))& 
 
-          self%EFTc%y(ind)         = (-2*a**2*c2*E**((I*p*Pi*(3 + 2*s))/(2.*s))*Hds**2*p*s**2*XDS**(p + (3*p)/(2.*s))*adotoa**(2*p)*PhiPrime**(2 + 2*p) + Sqrt(2)*a*c3*E**((I*p*Pi*(1 + s))/s)*Hds*s*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(1 + p*(2 + 1/s))*PhiPrime**(1 + p*(2 + 1/s))*(3*PhiPrime - a*PhiPrimePrime) - 4*(-1)**p*(0,1)**(p/s)*XDS**(p + p/(2.*s))*adotoa**(2*(1 + p + p/s))*((-28*c5*s**2 + c4*p*(1 + s)*(-s + 6*p*(1 + s)))*PhiPrime**(2*(1 + p + p/s)) - a**2*c4*p*(1 + s)*(-s + 2*p*(1 + s))*PhiPrime**((2*p*(1 + s))/s)*PhiPrimePrime**2 - a*p*(1 + s)*PhiPrime**(1 + (2*p*(1 + s))/s)*((-3*c4*s - 8*c5*s + 4*c4*p*(1 + s))*PhiPrimePrime + a*c4*s*PhiPrimePrimePrime)) - Sqrt(2)*a**2*c3*E**((I*p*Pi*(1 + s))/s)*Hds*s*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(p*(2 + 1/s))*PhiPrime**(2 + p*(2 + 1/s))*adotoaPrime + 8*(-1)**p*(0,1)**(p/s)*a**2*c4*p**2*(1 + s)**2*XDS**(p + p/(2.*s))*adotoa**((2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*adotoaPrime**2 + 4*(-1)**p*(0,1)**(p/s)*a*XDS**(p + p/(2.*s))*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(1 + (2*p*(1 + s))/s)*(a*c4*p*(1 + s)*(s + 4*p*(1 + s))*PhiPrimePrime*adotoaPrime + PhiPrime*((-4*c5*s*(s + 2*p*(1 + s)) + c4*p*(1 + s)*(-s + 4*p*(1 + s)))*adotoaPrime + a*c4*p*s*(1 + s)*adotoaPrimePrime)))/(2.*(-1)**(p*(2 + 1/s))*(0,1)**(p/s)*s**2*XDS**(p*(2 + 3/(2.*s)))*PhiPrime**2)
+          self%EFTc%y(ind)         = (-2*(-1)**((p*(3 + 2*s))/s)*a**2*c2*Hds**2*p*s**2*XDS**((p*(3 + 2*s))/s)*adotoa**(2*p)*PhiPrime**(2 + 2*p) + & 
+     &    (-1)**((2*p*(1 + s))/s)*Sqrt(2)*a*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(1 + (2*p*(1 + s))/s)*(3*PhiPrime - a*PhiPrimePrime)-& 
+     &    4*(-1)**(p*(2 + 1/s))*XDS**(p*(2 + 1/s))*adotoa**(2 + (2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s)* &
+     &     ((-28*c5*s**2 + c4*p*(2 + s)*(-s + 6*p*(2 + s)))*PhiPrime**2 - a**2*c4*p*(2 + s)*(-s + 2*p*(2 + s))*PhiPrimePrime**2 -  &
+     &       a*p*(2 + s)*PhiPrime*((-3*c4*s - 8*c5*s + 4*c4*p*(2 + s))*PhiPrimePrime + a*c4*s*PhiPrimePrimePrime)) +  &
+     &    (-1)**(1 + (2*p*(1 + s))/s)*Sqrt(2)*a**2*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**((2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*adotoaPrime +  &
+     &    8*(-1)**(p*(2 + 1/s))*a**2*c4*p**2*(2 + s)**2*XDS**(p*(2 + 1/s))*adotoa**((2*p*(2 + s))/s)*PhiPrime**(2 + (2*p*(2 + s))/s)*adotoaPrime**2 +  &
+     &    4*(-1)**(p*(2 + 1/s))*a*XDS**(p*(2 + 1/s))*adotoa**(1 + (2*p*(2 + s))/s)*PhiPrime**(1 + (2*p*(2 + s))/s)* &
+     &     (a*c4*p*(2 + s)*(s + 4*p*(2 + s))*PhiPrimePrime*adotoaPrime +  &
+     &       PhiPrime*((-4*c5*s*(s + 2*p*(2 + s)) + c4*p*(2 + s)*(-s + 4*p*(2 + s)))*adotoaPrime + a*c4*p*s*(2 + s)*adotoaPrimePrime)))/ &
+     &  (2.*(-1)**((3*p*(1 + s))/s)*s**2*XDS**((3*p*(1 + s))/s)*PhiPrime**2)
 
-          self%EFTLambda%y(ind)    =         ((-1)**(1 + p + p/s)*(0,1)**(p/s)*a**2*c2*Hds**2*s**2*XDS**(p + (3*p)/(2.*s))*adotoa**(2*p)*PhiPrime**(2 + 2*p) - Sqrt(2)*a**2*c3*E**((I*p*Pi*(1 + s))/s)*Hds*s*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(1 + p*(2 + 1/s))*PhiPrime**(1 + p*(2 + 1/s))*PhiPrimePrime + 4*(-1)**p*(0,1)**(p/s)*XDS**(p + p/(2.*s))*adotoa**(2*(1 + p + p/s))*(s*(-2*c5*s + c4*p*(1 + s))*PhiPrime**(2*(1 + p + p/s)) + a**2*c4*p*(1 + s)*(-s + 2*p*(1 + s))*PhiPrime**((2*p*(1 + s))/s)*PhiPrimePrime**2 + a*p*(1 + s)*PhiPrime**(1 + (2*p*(1 + s))/s)*(4*(-2*c5*s + c4*p*(1 + s))*PhiPrimePrime + a*c4*s*PhiPrimePrimePrime)) - Sqrt(2)*a**2*c3*E**((I*p*Pi*(1 + s))/s)*Hds*s*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(p*(2 + 1/s))*PhiPrime**(2 + p*(2 + 1/s))*adotoaPrime + 8*(-1)**p*(0,1)**(p/s)*a**2*c4*p**2*(1 + s)**2*XDS**(p + p/(2.*s))*adotoa**((2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*adotoaPrime**2 + 4*(-1)**p*(0,1)**(p/s)*a*XDS**(p + p/(2.*s))*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(1 + (2*p*(1 + s))/s)*(a*c4*p*(1 + s)*(s + 4*p*(1 + s))*PhiPrimePrime*adotoaPrime + PhiPrime*(2*(s + 2*p*(1 + s))*(-2*c5*s + c4*p*(1 + s))*adotoaPrime + a*c4*p*s*(1 + s)*adotoaPrimePrime)))/((-1)**(p*(2 + 1/s))*(0,1)**(p/s)*s**2*XDS**(p*(2 + 3/(2.*s)))*PhiPrime**2)
+          self%EFTLambda%y(ind)    =  ((-1)**(1 + p*(2 + 3/s))*a**2*c2*Hds**2*s**2*XDS**((p*(3 + 2*s))/s)*adotoa**(2*p)*PhiPrime**(2 + 2*p) +  &
+     &    (-1)**(1 + (2*p*(1 + s))/s)*Sqrt(2)*a**2*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(1 + (2*p*(1 + s))/s)*PhiPrimePrime + & 
+     &    4*(-1)**(p*(2 + 1/s))*XDS**(p*(2 + 1/s))*adotoa**(2 + (2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s)* &
+     &     (s*(-2*c5*s + c4*p*(2 + s))*PhiPrime**2 + a**2*c4*p*(2 + s)*(-s + 2*p*(2 + s))*PhiPrimePrime**2 +  &
+     &       a*p*(2 + s)*PhiPrime*(4*(-2*c5*s + c4*p*(2 + s))*PhiPrimePrime + a*c4*s*PhiPrimePrimePrime)) +  &
+     &    (-1)**(1 + (2*p*(1 + s))/s)*Sqrt(2)*a**2*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**((2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*adotoaPrime +  &
+     &    8*(-1)**(p*(2 + 1/s))*a**2*c4*p**2*(2 + s)**2*XDS**(p*(2 + 1/s))*adotoa**((2*p*(2 + s))/s)*PhiPrime**(2 + (2*p*(2 + s))/s)*adotoaPrime**2 +  &
+     &    4*(-1)**(p*(2 + 1/s))*a*XDS**(p*(2 + 1/s))*adotoa**(1 + (2*p*(2 + s))/s)*PhiPrime**(1 + (2*p*(2 + s))/s)* &
+     &     (a*c4*p*(2 + s)*(s + 4*p*(2 + s))*PhiPrimePrime*adotoaPrime + PhiPrime*(2*(s + 2*p*(2 + s))*(-2*c5*s + c4*p*(2 + s))*adotoaPrime + a*c4*p*s*(2 + s)*adotoaPrimePrime)))       
 
-          self%EFTc%yp(ind)      = (-4*a**3*c2*E**((I*p*Pi*(3 + 2*s))/(2.*s))*Hds**2*p**2*s**3*XDS**(p + (3*p)/(2.*s))*adotoa**(1 + 2*p)*PhiPrime**(2 + 2*p)*PhiPrimePrime + Sqrt(2)*a*c3*E**((I*p*Pi*(1 + s))/s)*Hds*s*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(2 + p*(2 + 1/s))*PhiPrime**(1 + p*(2 + 1/s))*(-3*s*PhiPrime**2 + a**2*(s - p*(1 + 2*s))*PhiPrimePrime**2 + a*PhiPrime*(3*(p + 2*p*s)*PhiPrimePrime - a*s*PhiPrimePrimePrime)) + 4*(-1)**p*(0,1)**(p/s)*XDS**(p + p/(2.*s))*adotoa**(3 + (2*p*(1 + s))/s)*(2*s*(-28*c5*s**2 + c4*p*(1 + s)*(-s + 6*p*(1 + s)))*PhiPrime**(3 + (2*p*(1 + s))/s) + 2*a**3*c4*p*(1 + s)*(s**2 - 3*p*s*(1 + s) + 2*p**2*(1 + s)**2)*PhiPrime**((2*p*(1 + s))/s)*PhiPrimePrime**3 + a**2*p*(1 + s)*(-s + 2*p*(1 + s))*PhiPrime**(1 + (2*p*(1 + s))/s)*PhiPrimePrime*((-3*c4*s - 8*c5*s + 4*c4*p*(1 + s))*PhiPrimePrime + 3*a*c4*s*PhiPrimePrimePrime) + a*p*(1 + s)*PhiPrime**(2*(1 + p + p/s))*(-((-64*c5*s**2 + c4*(-3*s**2 + 2*p*s*(1 + s) + 12*p**2*(1 + s)**2))*PhiPrimePrime) + a*s*((-3*c4*s - 8*c5*s + 4*c4*p*(1 + s))*PhiPrimePrimePrime + a*c4*s*PhiPrimePrimePrimePrime))) - 4*a**3*c2*E**((I*p*Pi*(3 + 2*s))/(2.*s))*Hds**2*p**2*s**3*XDS**(p + (3*p)/(2.*s))*adotoa**(2*p)*PhiPrime**(3 + 2*p)*adotoaPrime - Sqrt(2)*a**3*c3*E**((I*p*Pi*(1 + s))/s)*Hds*p*s*(1 + 2*s)*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(p*(2 + 1/s))*PhiPrime**(3 + p*(2 + 1/s))*adotoaPrime**2 + 16*(-1)**p*(0,1)**(p/s)*a**3*c4*p**3*(1 + s)**3*XDS**(p + p/(2.*s))*adotoa**((2*p*(1 + s))/s)*PhiPrime**(3 + (2*p*(1 + s))/s)*adotoaPrime**3 - Sqrt(2)*a**2*c3*E**((I*p*Pi*(1 + s))/s)*Hds*s*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(1 + p*(2 + 1/s))*PhiPrime**(2 + p*(2 + 1/s))*(a*(s + p*(2 + 4*s))*PhiPrimePrime*adotoaPrime + PhiPrime*(-3*(p + s + 2*p*s)*adotoaPrime + a*s*adotoaPrimePrime)) + 4*(-1)**p*(0,1)**(p/s)*a**2*XDS**(p + p/(2.*s))*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*adotoaPrime*(a*c4*p*(1 + s)*(s**2 + 6*p*s*(1 + s) + 12*p**2*(1 + s)**2)*PhiPrimePrime*adotoaPrime - c4*p*s**2*PhiPrime*(adotoaPrime - a*adotoaPrimePrime) + PhiPrime*((-4*c5*s*(s + 2*p*(1 + s))**2 + c4*p*(-s**3 + 2*p*s*(1 + s)**2 + 8*p**2*(1 + s)**3))*adotoaPrime + a*c4*p*s*(s**2 + 6*p*(1 + s)**2)*adotoaPrimePrime)) + 4*(-1)**p*(0,1)**(p/s)*a*XDS**(p + p/(2.*s))*adotoa**(2*(1 + p + p/s))*PhiPrime*(3*a**2*c4*p*(1 + s)*(-s**2 + 4*p**2*(1 + s)**2)*PhiPrime**((2*p*(1 + s))/s)*PhiPrimePrime**2*adotoaPrime +a*p*(1 + s)*PhiPrime**(1 + (2*p*(1 + s))/s)*(3*a*c4*s*(s + 2*p*(1 + s))*PhiPrimePrimePrime*adotoaPrime + PhiPrimePrime*(2*(-4*c5*s*(3*s + 4*p*(1 + s)) + c4*(-3*s**2 + 8*p**2*(1 + s)**2))*adotoaPrime + a*c4*s*(s + 6*p*(1 + s))*adotoaPrimePrime)) - PhiPrime**(2*(1 + p + p/s))*((-4*c5*s**2*(15*s + 16*p*(1 + s)) + c4*p*(1 + s)*(-3*s**2 + 14*p*s*(1 + s) + 12*p**2*(1 + s)**2))*adotoaPrime + a*s*((4*c5*s*(s + 2*p*(1 + s)) - c4*p*(1 + s)*(-s + 4*p*(1 + s)))*adotoaPrimePrime - a*c4*p*s*(1 + s)*adotoaPrimePrimePrime))))/(2.*(-1)**(p*(2 + 1/s))*(0,1)**(p/s)*s**3*XDS**(p*(2 + 3/(2.*s)))*PhiPrime**3)
+          self%EFTc%yp(ind)      = (-4*(-1)**((p*(3 + 2*s))/s)*a**3*c2*Hds**2*p**2*s**3*XDS**((p*(3 + 2*s))/s)*adotoa**(1 + 2*p)*PhiPrime**(2 + 2*p)*PhiPrimePrime + &
+     &    (-1)**(1 + (2*p*(1 + s))/s)*Sqrt(2)*a*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**(2*(1 + p + p/s))*PhiPrime**(1 + (2*p*(1 + s))/s)*&
+     &     (3*s*PhiPrime**2 + a**2*(-s + 2*p*(1 + s))*PhiPrimePrime**2 + a*PhiPrime*(-6*p*(1 + s)*PhiPrimePrime + a*s*PhiPrimePrimePrime)) - &
+     &    4*(-1)**(p*(2 + 1/s))*XDS**(p*(2 + 1/s))*adotoa**(3 + (2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s)*&
+     &     (2*s*(28*c5*s**2 - c4*p*(2 + s)*(-s + 6*p*(2 + s)))*PhiPrime**3 - 2*a**3*c4*p*(2 + s)*(s**2 - 3*p*s*(2 + s) + 2*p**2*(2 + s)**2)*PhiPrimePrime**3 - &
+     &       a**2*p*(2 + s)*(-s + 2*p*(2 + s))*PhiPrime*PhiPrimePrime*((-3*c4*s - 8*c5*s + 4*c4*p*(2 + s))*PhiPrimePrime + 3*a*c4*s*PhiPrimePrimePrime) + &
+     &       a*p*(2 + s)*PhiPrime**2*((-64*c5*s**2 + c4*(-3*s**2 + 2*p*s*(2 + s) + 12*p**2*(2 + s)**2))*PhiPrimePrime - &
+     &          a*s*((-3*c4*s - 8*c5*s + 4*c4*p*(2 + s))*PhiPrimePrimePrime + a*c4*s*PhiPrimePrimePrimePrime))) - &
+     &    4*(-1)**((p*(3 + 2*s))/s)*a**3*c2*Hds**2*p**2*s**3*XDS**((p*(3 + 2*s))/s)*adotoa**(2*p)*PhiPrime**(3 + 2*p)*adotoaPrime - &
+     &    2*(-1)**((2*p*(1 + s))/s)*Sqrt(2)*a**3*c3*Hds*p*s*(1 + s)*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**((2*p*(1 + s))/s)*PhiPrime**(3 + (2*p*(1 + s))/s)*adotoaPrime**2 + &
+     &    16*(-1)**(p*(2 + 1/s))*a**3*c4*p**3*(2 + s)**3*XDS**(p*(2 + 1/s))*adotoa**((2*p*(2 + s))/s)*PhiPrime**(3 + (2*p*(2 + s))/s)*adotoaPrime**3 + &
+     &    (-1)**((2*p*(1 + s))/s)*Sqrt(2)*a**2*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*&
+     &     (-(a*(s + 4*p*(1 + s))*PhiPrimePrime*adotoaPrime) + PhiPrime*(3*(s + 2*p*(1 + s))*adotoaPrime - a*s*adotoaPrimePrime)) + &
+     &    4*(-1)**(p*(2 + 1/s))*a**2*XDS**(p*(2 + 1/s))*adotoa**(1 + (2*p*(2 + s))/s)*PhiPrime**(2 + (2*p*(2 + s))/s)*adotoaPrime*&
+     &     (a*c4*p*(2 + s)*(s**2 + 6*p*s*(2 + s) + 12*p**2*(2 + s)**2)*PhiPrimePrime*adotoaPrime + &
+     &       PhiPrime*((s + 2*p*(2 + s))*(-4*c5*s*(s + 2*p*(2 + s)) + c4*p*(2 + s)*(-s + 4*p*(2 + s)))*adotoaPrime + a*c4*p*s*(2 + s)*(s + 6*p*(2 + s))*adotoaPrimePrime)) + &
+     &    4*(-1)**(p*(2 + 1/s))*a*XDS**(p*(2 + 1/s))*adotoa**(2 + (2*p*(2 + s))/s)*PhiPrime**(1 + (2*p*(2 + s))/s)*&
+     &     (3*a**2*c4*p*(2 + s)*(-s**2 + 4*p**2*(2 + s)**2)*PhiPrimePrime**2*adotoaPrime + &
+     &       a*p*(2 + s)*PhiPrime*(3*a*c4*s*(s + 2*p*(2 + s))*PhiPrimePrimePrime*adotoaPrime + &
+     &          PhiPrimePrime*(2*(-4*c5*s*(3*s + 4*p*(2 + s)) + c4*(-3*s**2 + 8*p**2*(2 + s)**2))*adotoaPrime + a*c4*s*(s + 6*p*(2 + s))*adotoaPrimePrime)) - &
+     &       PhiPrime**2*((-4*c5*s**2*(15*s + 16*p*(2 + s)) + c4*p*(2 + s)*(-3*s**2 + 14*p*s*(2 + s) + 12*p**2*(2 + s)**2))*adotoaPrime + &
+     &          a*s*((4*c5*s*(s + 2*p*(2 + s)) - c4*p*(2 + s)*(-s + 4*p*(2 + s)))*adotoaPrimePrime - a*c4*p*s*(2 + s)*adotoaPrimePrimePrime))))/&
+     &  (2.*(-1)**((3*p*(1 + s))/s)*s**3*XDS**((3*p*(1 + s))/s)*PhiPrime**3)
 
-          self%EFTLambda%yp(ind) =         (-2*a**3*c2*E**((I*p*Pi*(3 + 2*s))/(2.*s))*Hds**2*p*s**3*XDS**(p + (3*p)/(2.*s))*adotoa**(1 + 2*p)*PhiPrime**(2 + 2*p)*PhiPrimePrime - Sqrt(2)*a**3*c3*E**((I*p*Pi*(1 + s))/s)*Hds*s*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(2 + p*(2 + 1/s))*PhiPrime**(1 + p*(2 + 1/s))*((p - s + 2*p*s)*PhiPrimePrime**2 + s*PhiPrime*PhiPrimePrimePrime) + 4*(-1)**p*(0,1)**(p/s)*XDS**(p + p/(2.*s))*adotoa**(3 + (2*p*(1 + s))/s)*(-2*s**2*(-2*c5*s + c4*p*(1 + s))*PhiPrime**(3 + (2*p*(1 + s))/s) + 2*a**3*c4*p*(1 + s)*(s**2 - 3*p*s*(1 + s) + 2*p**2*(1 + s)**2)*PhiPrime**((2*p*(1 + s))/s)*PhiPrimePrime**3 + a**2*p*(1 + s)*(-s + 2*p*(1 + s))*PhiPrime**(1 + (2*p*(1 + s))/s)*PhiPrimePrime*(4*(-2*c5*s + c4*p*(1 + s))*PhiPrimePrime + 3*a*c4*s*PhiPrimePrimePrime) + a*p*s*(1 + s)*PhiPrime**(2*(1 + p + p/s))*(4*c5*s*PhiPrimePrime - 2*c4*p*(1 + s)*PhiPrimePrime + 4*a*(-2*c5*s + c4*p*(1 + s))*PhiPrimePrimePrime + a**2*c4*s*PhiPrimePrimePrimePrime)) - 2*a**3*c2*E**((I*p*Pi*(3 + 2*s))/(2.*s))*Hds**2*p*s**3*XDS**(p + (3*p)/(2.*s))*adotoa**(2*p)*PhiPrime**(3 + 2*p)*adotoaPrime - Sqrt(2)*a**3*c3*E**((I*p*Pi*(1 + s))/s)*Hds*p*s*(1 + 2*s)*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(p*(2 + 1/s))*PhiPrime**(3 + p*(2 + 1/s))*adotoaPrime**2 + 16*(-1)**p*(0,1)**(p/s)*a**3*c4*p**3*(1 + s)**3*XDS**(p + p/(2.*s))*adotoa**((2*p*(1 + s))/s)*PhiPrime**(3 + (2*p*(1 + s))/s)*adotoaPrime**3 - Sqrt(2)*a**3*c3*E**((I*p*Pi*(1 + s))/s)*Hds*s*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(1 + p*(2 + 1/s))*PhiPrime**(2 + p*(2 + 1/s))*((s + p*(2 + 4*s))*PhiPrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrime) + 4*(-1)**p*(0,1)**(p/s)*a**2*XDS**(p + p/(2.*s))*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**2*adotoaPrime*(a*c4*p*(1 + s)*(s**2 + 6*p*s*(1 + s) + 12*p**2*(1 + s)**2)*PhiPrime**((2*p*(1 + s))/s)*PhiPrimePrime*adotoaPrime + a*c4*p*s**2*PhiPrime**(1 + 2*p + (2*p)/s)*adotoaPrimePrime + PhiPrime**(1 + (2*p*(1 + s))/s)*(2*(s + 2*p*(1 + s))**2*(-2*c5*s + c4*p*(1 + s))*adotoaPrime + a*c4*p*s*(s**2 + 6*p*(1 + s)**2)*adotoaPrimePrime)) + 4*(-1)**p*(0,1)**(p/s)*a*XDS**(p + p/(2.*s))*adotoa**(2*(1 + p + p/s))*PhiPrime*(3*a**2*c4*p*(1 + s)*(-s**2 + 4*p**2*(1 + s)**2)*PhiPrime**((2*p*(1 + s))/s)*PhiPrimePrime**2*adotoaPrime + a*p*(1 + s)*PhiPrime**(1 + (2*p*(1 + s))/s)*(3*a*c4*s*(s + 2*p*(1 + s))*PhiPrimePrimePrime*adotoaPrime + PhiPrimePrime*(4*(3*s + 4*p*(1 + s))*(-2*c5*s + c4*p*(1 + s))*adotoaPrime + a*c4*s*(s + 6*p*(1 + s))*adotoaPrimePrime)) - s*PhiPrime**(2*(1 + p + p/s))*(2*p*(1 + s)*(-2*c5*s + c4*p*(1 + s))*adotoaPrime - a*(2*(s + 2*p*(1 + s))*(-2*c5*s + c4*p*(1 + s))*adotoaPrimePrime + a*c4*p*s*(1 + s)*adotoaPrimePrimePrime))))/((-1)**(p*(2 + 1/s))*(0,1)**(p/s)*s**3*XDS**(p*(2 + 3/(2.*s)))*PhiPrime**3)
+          self%EFTLambda%yp(ind) =  (-2*(-1)**(p*(2 + 3/s))*a**3*c2*Hds**2*p*s**3*XDS**((p*(3 + 2*s))/s)*adotoa**(1 + 2*p)*PhiPrime**(2 + 2*p)*PhiPrimePrime + &
+     &    (-1)**(1 + (2*p*(1 + s))/s)*Sqrt(2)*a**3*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**(2*(1 + p + p/s))*PhiPrime**(1 + (2*p*(1 + s))/s)*&
+     &     ((-s + 2*p*(1 + s))*PhiPrimePrime**2 + s*PhiPrime*PhiPrimePrimePrime) + &
+     &    4*(-1)**(p*(2 + 1/s))*XDS**(p*(2 + 1/s))*adotoa**(3 + (2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s)*&
+     &     (-2*s**2*(-2*c5*s + c4*p*(2 + s))*PhiPrime**3 + 2*a**3*c4*p*(2 + s)*(s**2 - 3*p*s*(2 + s) + 2*p**2*(2 + s)**2)*PhiPrimePrime**3 + &
+     &       a**2*p*(2 + s)*(-s + 2*p*(2 + s))*PhiPrime*PhiPrimePrime*(4*(-2*c5*s + c4*p*(2 + s))*PhiPrimePrime + 3*a*c4*s*PhiPrimePrimePrime) + &
+     &       a*p*s*(2 + s)*PhiPrime**2*(4*c5*s*PhiPrimePrime - 2*c4*p*(2 + s)*PhiPrimePrime + 4*a*(-2*c5*s + c4*p*(2 + s))*PhiPrimePrimePrime + a**2*c4*s*PhiPrimePrimePrimePrime)) - &
+     &    2*(-1)**(p*(2 + 3/s))*a**3*c2*Hds**2*p*s**3*XDS**((p*(3 + 2*s))/s)*adotoa**(2*p)*PhiPrime**(3 + 2*p)*adotoaPrime - &
+     &    2*(-1)**((2*p*(1 + s))/s)*Sqrt(2)*a**3*c3*Hds*p*s*(1 + s)*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**((2*p*(1 + s))/s)*PhiPrime**(3 + (2*p*(1 + s))/s)*adotoaPrime**2 + &
+     &    16*(-1)**(p*(2 + 1/s))*a**3*c4*p**3*(2 + s)**3*XDS**(p*(2 + 1/s))*adotoa**((2*p*(2 + s))/s)*PhiPrime**(3 + (2*p*(2 + s))/s)*adotoaPrime**3 + &
+     &    (-1)**(1 + (2*p*(1 + s))/s)*Sqrt(2)*a**3*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*&
+     &     ((s + 4*p*(1 + s))*PhiPrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrime) + &
+     &    4*(-1)**(p*(2 + 1/s))*a**2*XDS**(p*(2 + 1/s))*adotoa**(1 + (2*p*(2 + s))/s)*PhiPrime**(2 + (2*p*(2 + s))/s)*adotoaPrime*&
+     &     (a*c4*p*(2 + s)*(s**2 + 6*p*s*(2 + s) + 12*p**2*(2 + s)**2)*PhiPrimePrime*adotoaPrime + &
+     &       PhiPrime*(2*(s + 2*p*(2 + s))**2*(-2*c5*s + c4*p*(2 + s))*adotoaPrime + a*c4*p*s*(2 + s)*(s + 6*p*(2 + s))*adotoaPrimePrime)) + &
+     &    4*(-1)**(p*(2 + 1/s))*a*XDS**(p*(2 + 1/s))*adotoa**(2 + (2*p*(2 + s))/s)*PhiPrime**(1 + (2*p*(2 + s))/s)*&
+     &     (3*a**2*c4*p*(2 + s)*(-s**2 + 4*p**2*(2 + s)**2)*PhiPrimePrime**2*adotoaPrime + &
+     &       a*p*(2 + s)*PhiPrime*(3*a*c4*s*(s + 2*p*(2 + s))*PhiPrimePrimePrime*adotoaPrime + &
+     &          PhiPrimePrime*(4*(3*s + 4*p*(2 + s))*(-2*c5*s + c4*p*(2 + s))*adotoaPrime + a*c4*s*(s + 6*p*(2 + s))*adotoaPrimePrime)) + &
+     &      s*PhiPrime**2*(-2*p*(2 + s)*(-2*c5*s + c4*p*(2 + s))*adotoaPrime + a*(2*(s + 2*p*(2 + s))*(-2*c5*s + c4*p*(2 + s))*adotoaPrimePrime + a*c4*p*s*(2 + s)*adotoaPrimePrimePrime))))/&
+     &  ((-1)**((3*p*(1 + s))/s)*s**3*XDS**((3*p*(1 + s))/s)*PhiPrime**3)      
 
-          self%EFTgamma1%y(ind)  = ((-4*a**2*c2*Hds**2*(-1 + p)*p*s**3*adotoa**(2*p)*PhiPrime**(2*p))/((-1)**p*XDS**p) + (Sqrt(2)*a*c3*Hds*s*(p - s + 2*p*s)*adotoa**(p*(2 + 1/s))*PhiPrime**(-1 + p*(2 + 1/s))*(adotoa*(3*(p - 2*s + 2*p*s)*PhiPrime + a*s*PhiPrimePrime) + a*s*PhiPrime*adotoaPrime))/((-1)**p*(0,1)**(p/s)*XDS**((p + 2*p*s)/(2.*s))) + (16*c5*s**2*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(-1 + (2*p*(1 + s))/s)*(2*a*(p - 2*s + p*s)*PhiPrimePrime + s*adotoa*(11*PhiPrime + 4*a*PhiPrimePrime) + a*(s + 2*p*(1 + s))*PhiPrime*adotoaPrime))/((-1)**(p*(1 + 1/s))*XDS**(p*(1 + 1/s))) - (4*c4*p*(1 + s)*adotoa**((2*p*(1 + s))/s)*PhiPrime**(-2 + (2*p*(1 + s))/s)*(adotoa**2*(2*(2*s**2 - 9*p*s*(1 + s) + 6*p**2*(1 + s)**2)*PhiPrime**2 + a**2*s*(-s + 2*p*(1 + s))*PhiPrimePrime**2 + a*s*PhiPrime*((-3*s + 4*p*(1 + s))*PhiPrimePrime + a*s*PhiPrimePrimePrime)) + 2*a**2*p*s*(1 + s)*PhiPrime**2*adotoaPrime**2 + a*s*adotoa*PhiPrime*(a*(s + 4*p*(1 + s))*PhiPrimePrime*adotoaPrime + PhiPrime*((-s + 4*p*(1 + s))*adotoaPrime + a*s*adotoaPrimePrime))))/((-1)**(p*(1 + 1/s))*XDS**(p*(1 + 1/s))))/(4.*a**2*H0**2*s**3)
+          self%EFTgamma1%y(ind)  =  ((-4*a**2*c2*Hds**2*(-1 + p)*p*s**3*adotoa**(2*p)*PhiPrime**(2*p))/((-1)**p*XDS**p) + &
+     &    (Sqrt(2)*a*c3*Hds*s*(-s + 2*p*(1 + s))*adotoa**((2*p*(1 + s))/s)*PhiPrime**(-1 + (2*p*(1 + s))/s)*&
+     &       (adotoa*(6*(p - s + p*s)*PhiPrime + a*s*PhiPrimePrime) + a*s*PhiPrime*adotoaPrime))/((-1)**(p*(1 + 1/s))*XDS**(p*(1 + 1/s))) + &
+     &    (16*c5*s**2*adotoa**(1 + (2*p*(2 + s))/s)*PhiPrime**(-1 + (2*p*(2 + s))/s)*&
+     &       (2*a*(-2*s + p*(2 + s))*PhiPrimePrime + s*adotoa*(11*PhiPrime + 4*a*PhiPrimePrime) + a*(s + 2*p*(2 + s))*PhiPrime*adotoaPrime))/((-1)**((p*(2 + s))/s)*XDS**((p*(2 + s))/s)) - &
+     &    (4*c4*p*(2 + s)*adotoa**((2*p*(2 + s))/s)*PhiPrime**(-2 + (2*p*(2 + s))/s)*&
+     &       (adotoa**2*(2*(2*s**2 - 9*p*s*(2 + s) + 6*p**2*(2 + s)**2)*PhiPrime**2 + a**2*s*(-s + 2*p*(2 + s))*PhiPrimePrime**2 + &
+     &            a*s*PhiPrime*((-3*s + 4*p*(2 + s))*PhiPrimePrime + a*s*PhiPrimePrimePrime)) + 2*a**2*p*s*(2 + s)*PhiPrime**2*adotoaPrime**2 + &
+     &         a*s*adotoa*PhiPrime*(a*(s + 4*p*(2 + s))*PhiPrimePrime*adotoaPrime + PhiPrime*((-s + 4*p*(2 + s))*adotoaPrime + a*s*adotoaPrimePrime))))/
+     &     ((-1)**((p*(2 + s))/s)*XDS**((p*(2 + s))/s)))/(4.*a**2*H0**2*s**3)
 
-          self%EFTgamma1%yp(ind)  = (-8*a**3*c2*E**((I*p*Pi*(3 + 2*s))/(2.*s))*Hds**2*(-1 + p)*p**2*s**4*XDS**(p + (3*p)/(2.*s))*adotoa**(1 + 2*p)*PhiPrime**(2 + 2*p)*PhiPrimePrime + Sqrt(2)*a*c3*Hds*s*XDS**(p*(1 + 1/s))*adotoa**(2 + p*(2 + 1/s))*PhiPrime**(1 + p*(2 + 1/s))*(-3*(-1)**(p*(1 + 1/s))*s*(2*s**2 - 3*p*s*(1 + 2*s) + (p + 2*p*s)**2)*PhiPrime**2 + (-1)**(p*(1 + 1/s))*a**2*s*(p - s + 2*p*s)**2*PhiPrimePrime**2 + a*E**((I*p*Pi*(1 + s))/s)*(p - s + 2*p*s)*PhiPrime*(3*p*(1 + 2*s)*(p - 2*s + 2*p*s)*PhiPrimePrime + a*s**2*PhiPrimePrimePrime)) + 4*(-1)**p*(0,1)**(p/s)*XDS**(p + p/(2.*s))*adotoa**(3 + (2*p*(1 + s))/s)*(4*s*(-22*c5*s**3 + c4*p*(1 + s)*(2*s**2 - 9*p*s*(1 + s) + 6*p**2*(1 + s)**2))*PhiPrime**(3 + (2*p*(1 + s))/s) - 2*a**3*c4*p*s*(1 + s)*(s**2 - 3*p*s*(1 + s) + 2*p**2*(1 + s)**2)*PhiPrime**((2*p*(1 + s))/s)*PhiPrimePrime**3 - a**2*s*(-s + 2*p*(1 + s))*PhiPrime**(1 + (2*p*(1 + s))/s)*PhiPrimePrime*((-16*c5*s**2 + c4*p*(1 + s)*(-3*s + 4*p*(1 + s)))*PhiPrimePrime + 3*a*c4*p*s*(1 + s)*PhiPrimePrimePrime) - a*PhiPrime**(2*(1 + p + p/s))*((-8*c5*s**3*(-2*s + 11*p*(1 + s)) + c4*p*(1 + s)*(3*s**3 + 4*p*s**2*(1 + s) - 36*p**2*s*(1 + s)**2 + 24*p**3*(1 + s)**3))*PhiPrimePrime + a*s**2*((-16*c5*s**2 + c4*p*(1 + s)*(-3*s + 4*p*(1 + s)))*PhiPrimePrimePrime + a*c4*p*s*(1 + s)*PhiPrimePrimePrimePrime))) - 8*a**3*c2*E**((I*p*Pi*(3 + 2*s))/(2.*s))*Hds**2*(-1 + p)*p**2*s**4*XDS**(p + (3*p)/(2.*s))*adotoa**(2*p)*PhiPrime**(3 + 2*p)*adotoaPrime + Sqrt(2)*a**3*c3*E**((I*p*Pi*(1 + s))/s)*Hds*p*s**2*(1 + 2*s)*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(p*(2 + 1/s))*PhiPrime**(3 + p*(2 + 1/s))*adotoaPrime**2 - 16*(-1)**p*(0,1)**(p/s)*a**3*c4*p**3*s*(1 + s)**3*XDS**(p + p/(2.*s))*adotoa**((2*p*(1 + s))/s)*PhiPrime**(3 + (2*p*(1 + s))/s)*adotoaPrime**3 + Sqrt(2)*a**2*c3*E**((I*p*Pi*(1 + s))/s)*Hds*s*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(1 + p*(2 + 1/s))*PhiPrime**(2 + p*(2 + 1/s))*(a*s*(s + p*(2 + 4*s))*PhiPrimePrime*adotoaPrime + PhiPrime*(3*(-2*s**2 - p*s*(1 + 2*s) + (p + 2*p*s)**2)*adotoaPrime + a*s**2*adotoaPrimePrime)) - 4*(-1)**p*(0,1)**(p/s)*a**2*s*XDS**(p + p/(2.*s))*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*adotoaPrime*(PhiPrimePrime*(-8*c5*s*(-2*s**2 - 3*p*s*(1 + s) + 2*p**2*(1 + s)**2) + a*c4*p*(1 + s)*(s**2 + 6*p*s*(1 + s) + 12*p**2*(1 + s)**2)*adotoaPrime) - c4*p*s**2*PhiPrime*(adotoaPrime - a*adotoaPrimePrime) + PhiPrime*((-4*c5*s*(s + 2*p*(1 + s))**2 + c4*p*(-s**3 + 2*p*s*(1 + s)**2 + 8*p**2*(1 + s)**3))*adotoaPrime + a*c4*p*s*(s**2 + 6*p*(1 + s)**2)*adotoaPrimePrime)) - 4*(-1)**p*(0,1)**(p/s)*a*XDS**(p + p/(2.*s))*adotoa**(2*(1 + p + p/s))*PhiPrime*(a*s*(-s + 2*p*(1 + s))*PhiPrime**((2*p*(1 + s))/s)*PhiPrimePrime**2*(-8*c5*s*(p - 2*s + p*s) + 3*a*c4*p*(1 + s)*(s + 2*p*(1 + s))*adotoaPrime) + s*PhiPrime**(1 + (2*p*(1 + s))/s)*(a*s*PhiPrimePrimePrime*(-8*c5*s*(p - 2*s + p*s) + 3*a*c4*p*(1 + s)*(s + 2*p*(1 + s))*adotoaPrime) + PhiPrimePrime*(2*a*(-4*c5*s*(4*s**2 + 5*p*s*(1 + s) + 2*p**2*(1 + s)**2) + c4*p*(1 + s)*(-3*s**2 + 8*p**2*(1 + s)**2))*adotoaPrime + s*(8*c5*s*(p - 2*s + p*s) + a**2*c4*p*(1 + s)*(s + 6*p*(1 + s))*adotoaPrimePrime))) + PhiPrime**(2*(1 + p + p/s))*((-4*c5*s**3*(21*s + 20*p*(1 + s)) + c4*p*(1 + s)*(9*s**3 - 32*p*s**2*(1 + s) - 12*p**2*s*(1 + s)**2 + 24*p**3*(1 + s)**3))*adotoaPrime + a*s**2*((-4*c5*s*(s + 2*p*(1 + s)) + c4*p*(1 + s)*(-s + 4*p*(1 + s)))*adotoaPrimePrime + a*c4*p*s*(1 + s)*adotoaPrimePrimePrime))))/(4.*(-1)**(p*(2 + 1/s))*(0,1)**(p/s)*a**3*H0**2*s**4*XDS**(p*(2 + 3/(2.*s)))*adotoa*PhiPrime**3)
+          self%EFTgamma1%yp(ind)  =  (-8*(-1)**((p*(3 + 2*s))/s)*a**3*c2*Hds**2*(-1 + p)*p**2*s**4*XDS**((p*(3 + 2*s))/s)*adotoa**(1 + 2*p)*PhiPrime**(2 + 2*p)*PhiPrimePrime + &
+     &    (-1)**((2*p*(1 + s))/s)*Sqrt(2)*a*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**(2*(1 + p + p/s))*PhiPrime**(1 + (2*p*(1 + s))/s)*&
+     &     (-6*s*(p - s + p*s)*PhiPrime**2 + a**2*s*(-s + 2*p*(1 + s))*PhiPrimePrime**2 + a*PhiPrime*(12*p*(1 + s)*(p - s + p*s)*PhiPrimePrime + a*s**2*PhiPrimePrimePrime)) - &
+     &    4*(-1)**(p*(2 + 1/s))*XDS**(p*(2 + 1/s))*adotoa**(3 + (2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s)*&
+     &     (-4*s*(-22*c5*s**3 + c4*p*(2 + s)*(2*s**2 - 9*p*s*(2 + s) + 6*p**2*(2 + s)**2))*PhiPrime**3 + 2*a**3*c4*p*s*(2 + s)*(s**2 - 3*p*s*(2 + s) + 2*p**2*(2 + s)**2)*PhiPrimePrime**3 + &
+     &       a**2*s*(-s + 2*p*(2 + s))*PhiPrime*PhiPrimePrime*((-16*c5*s**2 + c4*p*(2 + s)*(-3*s + 4*p*(2 + s)))*PhiPrimePrime + 3*a*c4*p*s*(2 + s)*PhiPrimePrimePrime) + &
+     &       a*PhiPrime**2*((-8*c5*s**3*(-2*s + 11*p*(2 + s)) + c4*p*(2 + s)*(3*s**3 + 4*p*s**2*(2 + s) - 36*p**2*s*(2 + s)**2 + 24*p**3*(2 + s)**3))*PhiPrimePrime + &
+     &          a*s**2*((-16*c5*s**2 + c4*p*(2 + s)*(-3*s + 4*p*(2 + s)))*PhiPrimePrimePrime + a*c4*p*s*(2 + s)*PhiPrimePrimePrimePrime))) - &
+     &    8*(-1)**((p*(3 + 2*s))/s)*a**3*c2*Hds**2*(-1 + p)*p**2*s**4*XDS**((p*(3 + 2*s))/s)*adotoa**(2*p)*PhiPrime**(3 + 2*p)*adotoaPrime + &
+     &    2*(-1)**((2*p*(1 + s))/s)*Sqrt(2)*a**3*c3*Hds*p*s**2*(1 + s)*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**((2*p*(1 + s))/s)*PhiPrime**(3 + (2*p*(1 + s))/s)*adotoaPrime**2 - &
+     &    16*(-1)**(p*(2 + 1/s))*a**3*c4*p**3*s*(2 + s)**3*XDS**(p*(2 + 1/s))*adotoa**((2*p*(2 + s))/s)*PhiPrime**(3 + (2*p*(2 + s))/s)*adotoaPrime**3 + &
+     &    (-1)**((2*p*(1 + s))/s)*Sqrt(2)*a**2*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*&
+     &     (a*s*(s + 4*p*(1 + s))*PhiPrimePrime*adotoaPrime + PhiPrime*(6*(-s**2 - p*s*(1 + s) + 2*p**2*(1 + s)**2)*adotoaPrime + a*s**2*adotoaPrimePrime)) - &
+     &    4*(-1)**(p*(2 + 1/s))*a**2*s*XDS**(p*(2 + 1/s))*adotoa**(1 + (2*p*(2 + s))/s)*PhiPrime**(2 + (2*p*(2 + s))/s)*adotoaPrime*&
+     &     (PhiPrimePrime*(-8*c5*s*(-2*s**2 - 3*p*s*(2 + s) + 2*p**2*(2 + s)**2) + a*c4*p*(2 + s)*(s**2 + 6*p*s*(2 + s) + 12*p**2*(2 + s)**2)*adotoaPrime) + &
+     &       PhiPrime*((s + 2*p*(2 + s))*(-4*c5*s*(s + 2*p*(2 + s)) + c4*p*(2 + s)*(-s + 4*p*(2 + s)))*adotoaPrime + a*c4*p*s*(2 + s)*(s + 6*p*(2 + s))*adotoaPrimePrime)) - &
+     &    4*(-1)**(p*(2 + 1/s))*a*XDS**(p*(2 + 1/s))*adotoa**(2 + (2*p*(2 + s))/s)*PhiPrime**(1 + (2*p*(2 + s))/s)*&
+     &     (a*s*(-s + 2*p*(2 + s))*PhiPrimePrime**2*(-8*c5*s*(-2*s + p*(2 + s)) + 3*a*c4*p*(2 + s)*(s + 2*p*(2 + s))*adotoaPrime) + &
+     &       s*PhiPrime*(a*s*PhiPrimePrimePrime*(-8*c5*s*(-2*s + p*(2 + s)) + 3*a*c4*p*(2 + s)*(s + 2*p*(2 + s))*adotoaPrime) + &
+     &          PhiPrimePrime*(2*a*(-4*c5*s*(4*s**2 + 5*p*s*(2 + s) + 2*p**2*(2 + s)**2) + c4*p*(2 + s)*(-3*s**2 + 8*p**2*(2 + s)**2))*adotoaPrime + &
+     &             s*(8*c5*s*(-2*s + p*(2 + s)) + a**2*c4*p*(2 + s)*(s + 6*p*(2 + s))*adotoaPrimePrime))) + &
+     &       PhiPrime**2*((-4*c5*s**3*(21*s + 20*p*(2 + s)) + c4*p*(2 + s)*(9*s**3 - 32*p*s**2*(2 + s) - 12*p**2*s*(2 + s)**2 + 24*p**3*(2 + s)**3))*adotoaPrime + &
+     &          a*s**2*((-4*c5*s*(s + 2*p*(2 + s)) + c4*p*(2 + s)*(-s + 4*p*(2 + s)))*adotoaPrimePrime + a*c4*p*s*(2 + s)*adotoaPrimePrimePrime))))/
+     &  (4.*(-1)**((3*p*(1 + s))/s)*a**3*H0**2*s**4*XDS**((3*p*(1 + s))/s)*adotoa*PhiPrime**3)
 
 
-          self%EFTgamma2%y(ind)  =  (-(Sqrt(2)*a*c3*E**((I*p*Pi*(1 + s))/s)*Hds*s*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(p*(2 + 1/s))*PhiPrime**(1 + p*(2 + 1/s))) + 4*(-1)**p*(0,1)**(p/s)*XDS**(p + p/(2.*s))*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**((2*p*(1 + s))/s)*(2*(-8*c5*s**2 + c4*p*(1 + s)*(-s + 2*p*(1 + s)))*PhiPrime + a*c4*p*s*(1 + s)*PhiPrimePrime) + 4*(-1)**p*(0,1)**(p/s)*a*c4*p*s*(1 + s)*XDS**(p + p/(2.*s))*adotoa**((2*p*(1 + s))/s)*PhiPrime**(1 + (2*p*(1 + s))/s)*adotoaPrime)/((-1)**(p*(2 + 1/s))*(0,1)**(p/s)*a*H0*s**2*XDS**(p*(2 + 3/(2.*s)))*PhiPrime)
+          self%EFTgamma2%y(ind)  =          ((-1)**(1 + p + (2*p)/s)*Sqrt(2)*a*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((p*(2 + s))/s)*adotoa**((2*p*(1 + s))/s)*PhiPrime**(1 + (2*p*(1 + s))/s) + &
+     &    4*(-1)**(p*(1 + 1/s))*XDS**(p*(1 + 1/s))*adotoa**(1 + (2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s)*(2*(-8*c5*s**2 + c4*p*(2 + s)*(-s + 2*p*(2 + s)))&
+     &    *PhiPrime +a*c4*p*s*(2 + s)*PhiPrimePrime) + &
+     &    4*(-1)**(p*(1 + 1/s))*a*c4*p*s*(2 + s)*XDS**(p*(1 + 1/s))*adotoa**((2*p*(2 + s))/s)*PhiPrime**(1 + (2*p*(2 + s))/s)*adotoaPrime)/
+     &  ((-1)**(p*(2 + 3/s))*a*H0*s**2*XDS**(p*(2 + 3/s))*PhiPrime)
 
-          self%EFTgamma2%yp(ind)  =  (-(Sqrt(2)*a**2*c3*E**((I*p*Pi*(1 + s))/s)*Hds*p*s*(1 + 2*s)*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(1 + p*(2 + 1/s))*PhiPrime**(1 + p*(2 + 1/s))*PhiPrimePrime) - 4*(-1)**p*(0,1)**(p/s)*XDS**(p + p/(2.*s))*adotoa**(2*(1 + p + p/s))*(2*s*(-8*c5*s**2 + c4*p*(1 + s)*(-s + 2*p*(1 + s)))*PhiPrime**(2*(1 + p + p/s)) - a**2*c4*p*s*(1 + s)*(-s + 2*p*(1 + s))*PhiPrime**((2*p*(1 + s))/s)*PhiPrimePrime**2 - a*p*(1 + s)*PhiPrime**(1 + (2*p*(1 + s))/s)*(4*(-8*c5*s**2 + c4*p*(1 + s)*(-s + 2*p*(1 + s)))*PhiPrimePrime + a*c4*s**2*PhiPrimePrimePrime)) - Sqrt(2)*a**2*c3*E**((I*p*Pi*(1 + s))/s)*Hds*p*s*(1 + 2*s)*(p - s + 2*p*s)*XDS**(p*(1 + 1/s))*adotoa**(p*(2 + 1/s))*PhiPrime**(2 + p*(2 + 1/s))*adotoaPrime + 8*(-1)**p*(0,1)**(p/s)*a**2*c4*p**2*s*(1 + s)**2*XDS**(p + p/(2.*s))*adotoa**((2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*adotoaPrime**2 + 4*(-1)**p*(0,1)**(p/s)*a*XDS**(p + p/(2.*s))*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(1 + (2*p*(1 + s))/s)*(a*c4*p*s*(1 + s)*(s + 4*p*(1 + s))*PhiPrimePrime*adotoaPrime + PhiPrime*(2*(s + 2*p*(1 + s))*(-8*c5*s**2 + c4*p*(1 + s)*(-s + 2*p*(1 + s)))*adotoaPrime + a*c4*p*s**2*(1 + s)*adotoaPrimePrime)))/((-1)**(p*(2 + 1/s))*(0,1)**(p/s)*a**2*H0*s**3*XDS**(p*(2 + 3/(2.*s)))*adotoa*PhiPrime**2)
+          self%EFTgamma2%yp(ind)  =  (2*((-1)**(1 + p + (2*p)/s)*Sqrt(2)*a**2*c3*Hds*p*s*(1 + s)*(-s + 2*p*(1 + s))*XDS**((p*(2 + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*&
+     &   PhiPrime**(1 + (2*p*(1 + s))/s)*PhiPrimePrime + &
+     &      2*(-1)**(p*(1 + 1/s))*XDS**(p*(1 + 1/s))*adotoa**(2 + (2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s)*&
+     &       (-2*s*(-8*c5*s**2 + c4*p*(2 + s)*(-s + 2*p*(2 + s)))*PhiPrime**2 + a**2*c4*p*s*(2 + s)*(-s + 2*p*(2 + s))*PhiPrimePrime**2 + &
+     &         a*p*(2 + s)*PhiPrime*(4*(-8*c5*s**2 + c4*p*(2 + s)*(-s + 2*p*(2 + s)))*PhiPrimePrime + a*c4*s**2*PhiPrimePrimePrime)) + &
+     &      (-1)**(1 + p + (2*p)/s)*Sqrt(2)*a**2*c3*Hds*p*s*(1 + s)*(-s + 2*p*(1 + s))*XDS**((p*(2 + s))/s)*adotoa**((2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*adotoaPrime + &
+     &      4*(-1)**(p*(1 + 1/s))*a**2*c4*p**2*s*(2 + s)**2*XDS**(p*(1 + 1/s))*adotoa**((2*p*(2 + s))/s)*PhiPrime**(2 + (2*p*(2 + s))/s)*adotoaPrime**2 + &
+     &      2*(-1)**(p*(1 + 1/s))*a*XDS**(p*(1 + 1/s))*adotoa**(1 + (2*p*(2 + s))/s)*PhiPrime**(1 + (2*p*(2 + s))/s)*&
+     &       (a*c4*p*s*(2 + s)*(s + 4*p*(2 + s))*PhiPrimePrime*adotoaPrime + &
+     &         PhiPrime*(2*(s + 2*p*(2 + s))*(-8*c5*s**2 + c4*p*(2 + s)*(-s + 2*p*(2 + s)))*adotoaPrime + a*c4*p*s**2*(2 + s)*adotoaPrimePrime))))/&
+     &  ((-1)**(p*(2 + 3/s))*a**2*H0*s**3*XDS**(p*(2 + 3/s))*adotoa*PhiPrime**2)
 
-          self%EFTgamma3%y(ind)  = (4*(-2*c5*s + c4*p*(1 + s))*adotoa**((2*p*(1 + s))/s)*PhiPrime**((2*p*(1 + s))/s))/((-1)**(p*(1 + 1/s))*s*XDS**(p*(1 + 1/s)))
+          self%EFTgamma3%y(ind)  = (4*(-2*c5*s + c4*p*(2 + s))*adotoa**((2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s))/((-1)**((p*(2 + s))/s)*s*XDS**((p*(2 + s))/s))
 
-          self%EFTgamma3%yp(ind)  =  (8*p*(1 + s)*(-2*c5*s + c4*p*(1 + s))*adotoa**(-1 + (2*p*(1 + s))/s)*PhiPrime**(-1 + (2*p*(1 + s))/s)*(adotoa*PhiPrimePrime + PhiPrime*adotoaPrime))/((-1)**(p*(1 + 1/s))*s**2*XDS**(p*(1 + 1/s)))
+          self%EFTgamma3%yp(ind)  =     (8*p*(2 + s)*(-2*c5*s + c4*p*(2 + s))*adotoa**(-1 + (2*p*(2 + s))/s)*PhiPrime**(-1 + (2*p*(2 + s))/s)*(adotoa*PhiPrimePrime + PhiPrime*adotoaPrime))/&
+     &  ((-1)**((p*(2 + s))/s)*s**2*XDS**((p*(2 + s))/s))
 
           self%EFTgamma4%y(ind)  = -self%EFTgamma3%y(ind)
 
           self%EFTgamma4%yp(ind)  = -self%EFTgamma3%yp(ind)
 
-          self%EFTgamma4%ypp(ind) = (-8*p*(1 + s)*(-2*c5*s + c4*p*(1 + s))*adotoa**(-2 + (2*p*(1 + s))/s)*PhiPrime**(-2 + (2*p*(1 + s))/s)*(adotoa**2*((-s + 2*p*(1 + s))*PhiPrimePrime**2 + s*PhiPrime*PhiPrimePrimePrime) + (-s + 2*p*(1 + s))*PhiPrime**2*adotoaPrime**2 + adotoa*PhiPrime*(4*p*(1 + s)*PhiPrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrime)))/((-1)**(p*(1 + 1/s))*s**3*XDS**(p*(1 + 1/s)))
+          self%EFTgamma4%ypp(ind) =    (-8*p*(2 + s)*(-2*c5*s + c4*p*(2 + s))*adotoa**(-2 + (2*p*(2 + s))/s)*PhiPrime**(-2 + (2*p*(2 + s))/s)*&
+     &    (adotoa**2*((-s + 2*p*(2 + s))*PhiPrimePrime**2 + s*PhiPrime*PhiPrimePrimePrime) + (-s + 2*p*(2 + s))*PhiPrime**2*adotoaPrime**2 + &
+     &      adotoa*PhiPrime*(4*p*(2 + s)*PhiPrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrime)))/((-1)**((p*(2 + s))/s)*s**3*XDS**((p*(2 + s))/s))
 
          ! -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
          ! modification ends
@@ -718,8 +896,8 @@ contains
 
         !eft_cache%Hdot = eft_cache%adotoa**2 +0.25_dl*(eft_par_cache%h0_Mpc)**2*a**3*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime
         !eft_cache%Hdotdot = 2._dl*eft_cache%adotoa*eft_cache%Hdot +3._dl*eft_cache%adotoa*( eft_cache%Hdot -eft_cache%adotoa**2 ) +0.25_dl*(eft_par_cache%h0_Mpc)**2*eft_cache%adotoa*a2**2&
-            & *( ( 1._dl +Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_primeprime +Omega_tot_prime**2&
-            & *( 4._dl*Omega_phi0/( Omega_tot**2 +4._dl*Omega_phi0 )**( 1.5_dl ) ) )
+           ! & *( ( 1._dl +Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_primeprime +Omega_tot_prime**2&
+           ! & *( 4._dl*Omega_phi0/( Omega_tot**2 +4._dl*Omega_phi0 )**( 1.5_dl ) ) )
 
 
 ! include H prime der. here
