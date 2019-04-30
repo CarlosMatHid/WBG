@@ -49,7 +49,7 @@ module EFTCAMB_full_WB_Galileon
         real(dl)  :: c3      !< WB Galileon model parameter \f$c_3\f$
         real(dl)  :: c4      !< WB Galileon model parameter \f$c_4\f$
         real(dl)  :: c5      !< WB Galileon model parameter \f$c_5\f$
-        real(dl)  :: ChiDS      !!!!!!!csi                     !< WB Galileon background parameter \f$\xi\f$ deriving from the tracker solution @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        real(dl)  :: XDS      !!!!!!!csi                     !< WB Galileon background parameter \f$\xi\f$ deriving from the tracker solution @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         real(dl)  :: p                 !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         real(dl)  :: s                 !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         real(dl)  :: Hds               !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -170,9 +170,9 @@ contains
         integer                      , intent(in)    :: feedback_level !< level of feedback from the background code. 0=none; 1=some; 2=chatty.
         logical                      , intent(out)   :: success        !< wether the background initialization succeded or not
 
-        real(dl) :: Omega_!Omega_phi0
+        real(dl) :: !Omega_phi0
 
-        Omega_phi0 = params_cache%omegav
+        !Omega_phi0 = params_cache%omegav
 
         ! WB -> just c_4 and c_5
         self%c4 = 0.084852._dl   !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -248,7 +248,7 @@ contains
          real(dl) :: rhonu, presnu, grhormass_t,presnudotdotdot,presnudotdot,presnudot,
          real(dl) :: adotoa, Hdot,Hdotdot,Hddd, Hdddd
 
-         real(dl) :: 
+         real(dl) :: adotoaPrime, adotoaPrimePrime, adotoaPrimePrimePrime!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
          real(dl) :: Phi, PhiPrime, PhiPrimePrime, PhiPrimePrimePrime, PhiPrimePrimePrimePrime, m0, a2, c3
          integer  :: nu_i
 
@@ -278,9 +278,7 @@ contains
          adotoaPrimePrime =   !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
          adotoaPrimePrimePrime =   !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-         Hdot = adotoaPrime*adotoa*a  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-         Hdotdot = adotoaPrimePrime*adotoa**2*a**2 + adotoaPrime**2*adotoa*a**2 + adotoaPrime*adotoa**2*a  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
+         
          !Omega_phi0 = eft_par_cache%omegav
          !Omega_tot_prime = -3._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-4) -4._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-5) &
                                   & -(rhonu_tot+presnu_tot)/(eft_par_cache%h0_Mpc**2*a2*a)
@@ -345,12 +343,12 @@ contains
             end do
         end if
 
-        Omega_tot_primeprimeprime = -60._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-6) -120._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-7)&
+        !Omega_tot_primeprimeprime = -60._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-6) -120._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-7)&
                     & +(-20._dl*(rhonu_tot+presnu_tot) + (6._dl/adotoa +Hdot/adotoa**3)*presnudot_tot  -1._dl/adotoa**2*presnudotdot_tot)/(eft_par_cache%h0_Mpc**2*a**5)
 
         Hddd = a*adotoa**3*adotoaPrime + 4*a**2*adotoa**2*adotoaPrime**2 + a**3*adotoa*adotoaPrime**3 + 3*a**2*adotoa**3*adotoaPrimePrime + 4*a**3*adotoa**2*adotoaPrime*adotoaPrimePrime + a**3*adotoa**3*adotoaPrimePrimePrime
 
-        Omega_tot_primeprimeprimeprime = 360._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-7) +840._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-8)&
+        !Omega_tot_primeprimeprimeprime = 360._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-7) +840._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-8)&
                     & +(120._dl*(rhonu_tot+presnu_tot) + (-38._dl/adotoa -9._dl*Hdot/adotoa**3 +Hdotdot/adotoa**4 &
                     & -3._dl*Hdot**2/adotoa**5 )*presnudot_tot +presnudotdot_tot*( 9._dl/adotoa**2 +3._dl*Hdot/adotoa**4 )&
                     & -presnudotdotdot_tot/adotoa**3)/(eft_par_cache%h0_Mpc**2*a**6)
@@ -362,8 +360,10 @@ contains
               return
           else if ( adotoa  == 0._dl ) then
               if  ( adotoa  == 0._dl ) return
-              if  ( HPrime    == 0._dl ) return !Hdot @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-              if  ( HPrimePrime == 0._dl ) return !Hdotdot @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+              if  ( adotoaPrime    == 0._dl ) return !Hdot @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+              if  ( adotoaPrimePrime == 0._dl ) return !Hdotdot @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+              if  ( adotoaPrimePrimePrime == 0._dl ) return !Hdotdot @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+              if  ( adotoaPrimePrimePrimePrime == 0._dl ) return !Hdotdot @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
           end if
           !
           ! compute the psi field and its derivatives
@@ -388,15 +388,15 @@ contains
           !phip4 = ( psiprimeprimeprime -3._dl*phip3 )/a
           !phip5 = -( psiprimeprimeprime -3._dl*phip3 )/a2+( psiprimeprimeprimeprime -3._dl*phip4 )/a
           !
-          Chi = ChiDS*((a*Hds)/adotoa)**((2*s)/p)! from tracker@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+          Chi = XDS*((a*Hds)/adotoa)**((2*s)/p)! from tracker@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
          
           ChiPrime =(2*s*Chi*(adotoa - a*adotoaPrime))/(a*p*adotoa) !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-          ChiPP = (2*s*Chi*(-((p - 2*s)*adotoa**2) + a**2*(p + 2*s)*adotoaPrime**2 - a*adotoa*(4*s*adotoaPrime + a*p*adotoaPrimePrime)))/(a**2*p**2*adotoa**2)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+          ChiPrimePrime = (2*s*Chi*(-((p - 2*s)*adotoa**2) + a**2*(p + 2*s)*adotoaPrime**2 - a*adotoa*(4*s*adotoaPrime + a*p*adotoaPrimePrime)))/(a**2*p**2*adotoa**2)!@@@@@@@@@@@@@@@@
 
-          ChiPPP = (2*s*Chi*(2*(p**2 - 3*p*s + 2*s**2)*adotoa**3 - 2*a**3*(p**2 + 3*p*s + 2*s**2)*adotoaPrime**3 + 3*a**2*(p + 2*s)*adotoa*adotoaPrime*(2*s*adotoaPrime + a*p*adotoaPrimePrime) - a*adotoa**2*(-6*(p - 2*s)*s*adotoaPrime + a*p*(6*s*adotoaPrimePrime + a*p*adotoaPrimePrimePrime))))/(a**3*p**3*adotoa**3)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+          ChiPrimePrimePrime = (2*s*Chi*(2*(p**2 - 3*p*s + 2*s**2)*adotoa**3 - 2*a**3*(p**2 + 3*p*s + 2*s**2)*adotoaPrime**3 + 3*a**2*(p + 2*s)*adotoa*adotoaPrime*(2*s*adotoaPrime + a*p*adotoaPrimePrime) - a*adotoa**2*(-6*(p - 2*s)*s*adotoaPrime + a*p*(6*s*adotoaPrimePrime + a*p*adotoaPrimePrimePrime))))/(a**3*p**3*adotoa**3)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-          ChiPPPP = (2*s*Chi*((-6*p**3 + 22*p**2*s - 24*p*s**2 + 8*s**3)*adotoa**4 + 2*a**4*(3*p**3 + 11*p**2*s + 12*p*s**2 + 4*s**3)*adotoaPrime**4 -4*a**3*(p**2 + 3*p*s + 2*s**2)*adotoa*adotoaPrime**2*(4*s*adotoaPrime + 3*a*p*adotoaPrimePrime) + a**2*(p + 2*s)*adotoa**2*(-12*(p - 2*s)*s*adotoaPrime**2 + 3*a**2*p**2*adotoaPrimePrime**2 + 4*a*p*adotoaPrime*(6*s*adotoaPrimePrime + a*p*adotoaPrimePrimePrime)) - a*adotoa**3*(16*s*(p**2 - 3*p*s + 2*s**2)*adotoaPrime + a*p*(-12*(p - 2*s)*s*adotoaPrimePrime +  a*p*(8*s*adotoaPrimePrimePrime + a*p*adotoaPrimePrimePrimePrime)))))/(a**4*p**4*adotoa**4)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+          !ChiPrimePrimePrimePrime = (2*s*Chi*((-6*p**3 + 22*p**2*s - 24*p*s**2 + 8*s**3)*adotoa**4 + 2*a**4*(3*p**3 + 11*p**2*s + 12*p*s**2 + 4*s**3)*adotoaPrime**4 -4*a**3*(p**2 + 3*p*s + 2*s**2)*adotoa*adotoaPrime**2*(4*s*adotoaPrime + 3*a*p*adotoaPrimePrime) + a**2*(p + 2*s)*adotoa**2*(-12*(p - 2*s)*s*adotoaPrime**2 + 3*a**2*p**2*adotoaPrimePrime**2 + 4*a*p*adotoaPrime*(6*s*adotoaPrimePrime + a*p*adotoaPrimePrimePrime)) - a*adotoa**3*(16*s*(p**2 - 3*p*s + 2*s**2)*adotoaPrime + a*p*(-12*(p - 2*s)*s*adotoaPrimePrime +  a*p*(8*s*adotoaPrimePrimePrime + a*p*adotoaPrimePrimePrimePrime)))))/(a**4*p**4*adotoa**4)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
           
           PhiPrime = Sqrt(-Chi)/adotoa    ! from Chi definition @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -462,7 +462,7 @@ contains
 
         class(EFTCAMB_WB_Galileon)  :: self   !< the base class
 
-        self%parameter_number = 1
+        self%parameter_number = 3 !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
     end subroutine EFTCAMBWBGalileonComputeParametersNumber
 
@@ -484,11 +484,13 @@ contains
           write(*,*)
           write(*,'(a,a)')    '   Model               =  ', self%name
           write(*,'(a,I3)')   '   Number of params    ='  , self%parameter_number
-          write(*,'(a,F12.6)')   '                 xi    ='  , self%csi
-          write(*,'(a,F12.6)')   '                 c2    ='  , self%WBGalileon_c2
-          write(*,'(a,F12.6)')   '                 c3    ='  , self%WBGalileon_c3
-          write(*,'(a,F12.6)')   '                 c4    ='  , self%WBGalileon_c4
-          write(*,'(a,F12.6)')   '                 c5    ='  , self%WBGalileon_c5
+          write(*,'(a,F12.6)')   '                 WB_Galileon_XDS    ='  , self%XDS
+          write(*,'(a,F12.6)')   '                 WB_Galileon_p    ='  , self%p
+          write(*,'(a,F12.6)')   '                 WB_Galileon_q    ='  , self%q
+          write(*,'(a,F12.6)')   '                 c2    ='  , self%c2
+          write(*,'(a,F12.6)')   '                 c3    ='  , self%c3
+          write(*,'(a,F12.6)')   '                 c4    ='  , self%c4
+          write(*,'(a,F12.6)')   '                 c5    ='  , self%c5
 
         end if
         ! print the values of the parameters:
@@ -713,10 +715,19 @@ contains
         Omega_tot_primeprime = 12._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-5) +20._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-6)&
                           & +(4._dl*(eft_cache%grhonu_tot+eft_cache%gpinu_tot)-eft_cache%gpinudot_tot/eft_cache%adotoa )/(eft_par_cache%h0_Mpc**2*a2**2)
         Omega_phi0 = eft_par_cache%omegav
-        eft_cache%Hdot = eft_cache%adotoa**2 +0.25_dl*(eft_par_cache%h0_Mpc)**2*a**3*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime
-        eft_cache%Hdotdot = 2._dl*eft_cache%adotoa*eft_cache%Hdot +3._dl*eft_cache%adotoa*( eft_cache%Hdot -eft_cache%adotoa**2 ) +0.25_dl*(eft_par_cache%h0_Mpc)**2*eft_cache%adotoa*a2**2&
+
+        !eft_cache%Hdot = eft_cache%adotoa**2 +0.25_dl*(eft_par_cache%h0_Mpc)**2*a**3*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime
+        !eft_cache%Hdotdot = 2._dl*eft_cache%adotoa*eft_cache%Hdot +3._dl*eft_cache%adotoa*( eft_cache%Hdot -eft_cache%adotoa**2 ) +0.25_dl*(eft_par_cache%h0_Mpc)**2*eft_cache%adotoa*a2**2&
             & *( ( 1._dl +Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_primeprime +Omega_tot_prime**2&
             & *( 4._dl*Omega_phi0/( Omega_tot**2 +4._dl*Omega_phi0 )**( 1.5_dl ) ) )
+
+
+! include H prime der. here
+
+        eft_cache%Hdot = eft_cache%adotoaPrime*eft_cache%adotoa*a  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        eft_cache%Hdotdot = eft_cache%adotoaPrimePrime*aeft_cache%dotoa**2*a2 + eft_cache%adotoaPrime**2*eft_cache%adotoa*a**2 + eft_cache%adotoaPrime*adotoa**2*a  !@@@@@@@@@@@@@@@@@@@@@@@
+
+
 
     end subroutine EFTCAMBWBGalileonComputeHubbleDer
 
