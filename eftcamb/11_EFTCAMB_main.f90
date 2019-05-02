@@ -41,7 +41,7 @@ module EFTCAMB_main
     use EFTCAMB_full_Cubic_Galileon
     use EFTCAMB_full_Quartic_Galileon
     use EFTCAMB_full_Quintic_Galileon
-
+    !use EFTCAMB_full_WB_Galileon
     implicit none
 
     private
@@ -325,9 +325,9 @@ contains
                     case(4)
                         allocate( EFTCAMB_Quintic_Galileon::self%model )
                         call self%model%init( 'Quintic Galileon', 'Quintic Galileon' )
-                    case(5)                                                   !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                        allocate( EFTCAMB_WB_Galileon::self%model )           !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                        call self%model%init( 'WB Galileon', 'WB Galileon' )  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    !case(5)                                                   !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                        !allocate( EFTCAMB_WB_Galileon::self%model )           !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                        !call self%model%init( 'WB Galileon', 'WB Galileon' )  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                     case default
                         write(*,'(a,I3)') 'No model corresponding to EFTFlag =', self%EFTflag
                         write(*,'(a,I3)') 'and FullMappingEFTmodel =', self%FullMappingEFTmodel
@@ -336,7 +336,7 @@ contains
                         write(*,'(a)')    'FullMappingEFTmodel=2  Cubic Galileon'
                         write(*,'(a)')    'FullMappingEFTmodel=3  Quartic Galileon'
                         write(*,'(a)')    'FullMappingEFTmodel=4  Quintic Galileon'
-                        write(*,'(a)')    'FullMappingEFTmodel=5  WB Galileon'!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                        !write(*,'(a)')    'FullMappingEFTmodel=5  WB Galileon'!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                         call MpiStop('EFTCAMB error')
                 end select
 
