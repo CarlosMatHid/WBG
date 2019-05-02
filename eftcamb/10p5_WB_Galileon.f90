@@ -49,7 +49,7 @@ module EFTCAMB_full_WB_Galileon
         real(dl)  :: c3      !< WB Galileon model parameter \f$c_3\f$
         real(dl)  :: c4      !< WB Galileon model parameter \f$c_4\f$
         real(dl)  :: c5      !< WB Galileon model parameter \f$c_5\f$
-        real(dl)  :: XDS      !!!!!!!csi                     !< WB Galileon background parameter \f$\xi\f$ deriving from the tracker solution @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        real(dl)  :: XDS     !!!!!!!csi!< WB Galileon background parameter \f$\xi\f$ deriving from the tracker solution @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         real(dl)  :: p                 !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         real(dl)  :: s                 !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         real(dl)  :: Hds               !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -62,7 +62,7 @@ module EFTCAMB_full_WB_Galileon
         type(equispaced_linear_interpolate_function_1D) :: EFTgamma2      !< The interpolated function \f$\gamma_2\f$ (and derivatives).
         type(equispaced_linear_interpolate_function_1D) :: EFTgamma3      !< The interpolated function \f$\gamma_3\f$ (and derivatives).
         type(equispaced_linear_interpolate_function_1D) :: EFTgamma4      !< The interpolated function \f$\gamma_4\f$ (and derivatives).
-        type(equispaced_linear_interpolate_function_1D) :: EFTgamma5      !< The interpolated function \f$\gamma_4\f$ (and derivatives). @ New line @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        type(equispaced_linear_interpolate_function_1D) :: EFTgamma5      !< The interpolated function \f$\gamma_5\f$ (and derivatives). @ New line @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
         ! some designer parameters:
         integer  :: designer_num_points = 1000                            !< Number of points sampled by the designer code.
@@ -301,10 +301,6 @@ contains
          Hdot = adotoa**2 +0.25_dl*(eft_par_cache%h0_Mpc)**2*a**3*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime
 
          
-         !Omega_phi0 = eft_par_cache%omegav
-         !Omega_tot_prime = -3._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-4) -4._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-5) &
-         !                         & -(rhonu_tot+presnu_tot)/(eft_par_cache%h0_Mpc**2*a2*a)
-         !Hdot = adotoa**2 +0.25_dl*(eft_par_cache%h0_Mpc)**2*a**3*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime
 
          rhonu_tot  = 0._dl
          presnu_tot = 0._dl
@@ -329,6 +325,7 @@ contains
 
             end do
          end if
+
          Omega_tot_primeprime = 12._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-5) +20._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-6)&
                                   & +(4._dl*(rhonu_tot+presnu_tot)-presnudot_tot/adotoa )/(eft_par_cache%h0_Mpc**2*a2**2)
 
@@ -395,10 +392,8 @@ contains
               return
           else if ( adotoa  == 0._dl ) then
               if  ( adotoa  == 0._dl ) return
-              if  ( Hdot    == 0._dl ) return !Hdot @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-              if  ( Hdotdot == 0._dl ) return !Hdotdot @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-             ! if  ( adotoaPrimePrimePrime == 0._dl ) return !Hdotdot @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-              !if  ( adotoaPrimePrimePrimePrime == 0._dl ) return !Hdotdot @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+              if  ( Hdot    == 0._dl ) return 
+              if  ( Hdotdot == 0._dl ) return 
           end if
           !
           ! compute the psi field and its derivatives
@@ -745,10 +740,18 @@ contains
         end if
         ! return the appropriate name:
         if ( i==1 ) then
-            latexname = '\xi'
+            latexname = '\Xi_{DS}'
             return
         end if
-        if ( i==0 ) then
+        if ( i==2 ) then    !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            latexname = 'p'
+            return
+        end if
+        if ( i==2 ) then    !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            latexname = 's'
+            return
+        end if
+        if ( i==0 ) then    !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             latexname = 'noname'
             return
         end if
@@ -777,7 +780,15 @@ contains
             return
         end if
         if ( i==1 ) then
-            value = self%XDS !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@222   @  @  @  @  @
+            value = self%XDS !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            return
+        end if
+        if ( i==2 ) then
+            value = self%p !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            return
+        end if
+        if ( i==3 ) then
+            value = self%s !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             return
         end if
 
