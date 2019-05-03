@@ -91,6 +91,7 @@ module EFTCAMB_full_WB_Galileon
         ! CAMB related procedures:
         procedure :: compute_background_EFT_functions  => EFTCAMBWBGalileonBackgroundEFTFunctions   !< subroutine that computes the value of the background EFT functions at a given time.
         procedure :: compute_secondorder_EFT_functions => EFTCAMBWBGalileonSecondOrderEFTFunctions  !< subroutine that computes the value of the second order EFT functions at a given time.
+        procedure :: compute_dtauda                    => EFTCAMBWBGalileonComputeDtauda    !< function that computes dtauda = 1/sqrt(a^2H^2).
         procedure :: compute_adotoa                    => EFTCAMBWBGalileonComputeAdotoa            !< subroutine that computes adotoa = H and its two derivatives wrt conformal time.
         procedure :: compute_H_derivs                  => EFTCAMBWBGalileonComputeHubbleDer         !< subroutine that computes the two derivatives wrt conformal time of H.
 
@@ -179,12 +180,14 @@ contains
         self%c5 = 0._dl          !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         self%c2 = 3._dl - 6._dl*self%c4 - 24._dl*self%c5 + 12._dl*self%c4*self%p + (24._dl*self%c4*self%p)/self%s!@@@@@@@@@@@@@@@@@@@
         self%c3 =    (sqrt(2._dl)*self%p)/(-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s) - (4._dl*sqrt(2._dl)*self%c4*self%p)/(-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s) &
-     &- (16._dl*sqrt(2._dl)*self%c5*self%p)/(-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s) + &
-     &  (8._dl*sqrt(2._dl)*self%c4*self%p**2._dl)/(-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s) + (16._dl*sqrt(2._dl)*self%c4*self%p**2)/((-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s)*self%s**2._dl) - &
-     &  (4._dl*sqrt(2._dl)*self%c4*self%p)/((-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s)*self%s) - (16._dl*sqrt(2._dl)*self%c5*self%p)/((-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s)*self%s) + &
-     &  (24._dl*sqrt(2._dl)*self%c4*self%p**2)/((-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s)*self%s)!@@@@@@@@@@@@@@@@@@@
+               &- (16._dl*sqrt(2._dl)*self%c5*self%p)/(-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s) + &
+               &  (8._dl*sqrt(2._dl)*self%c4*self%p**2._dl)/(-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s) + (16._dl*sqrt(2._dl)*self%c4*self%p**2)/((-1._dl + 2._dl*self%p &
+               &+ (2._dl*self%p)/self%s)*self%s**2._dl) - &
+               &  (4._dl*sqrt(2._dl)*self%c4*self%p)/((-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s)*self%s) - (16._dl*sqrt(2._dl)*self%c5*self%p)/((-1._dl + 2._dl*self%p &
+               &+ (2._dl*self%p)/self%s)*self%s) + &
+               &  (24._dl*sqrt(2._dl)*self%c4*self%p**2)/((-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s)*self%s)!@@@@@@@@@@@@@@@@@@@
 
-        self%Hds = params_cache%h0_Mpc*(1-( params_cache%omegac +params_cache%omegab + params_cache%omegag +params_cache%omegar) )**(1/(2+2*self%s))
+        self%Hds = params_cache%h0_Mpc*(1._dl-( params_cache%omegac +params_cache%omegab + params_cache%omegag +params_cache%omegar) )**(1._dl/(2._dl+2._dl*self%s))
 
         call self%feedback()
 
@@ -272,7 +275,7 @@ contains
          c3 = self%c3                                    !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
          c4 = self%c4                                    !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
          c5 = self%c5                                    !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        
+
          Hds = self%Hds                                  !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
@@ -293,14 +296,14 @@ contains
             end do
          end if
 
-         Omega_tot = ( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-3) + ( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-4) +rhonu_tot/(3._dl*eft_par_cache%h0_Mpc**2*a2)
+         Omega_tot = ( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-3.) + ( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-4) +rhonu_tot/(3._dl*eft_par_cache%h0_Mpc**2*a2)
          adotoa = sqrt( 0.5_dl*a2*(eft_par_cache%h0_Mpc)**2*( Omega_tot + sqrt( Omega_tot**2 +4._dl*eft_par_cache%omegav ) ) )
          Omega_phi0 = eft_par_cache%omegav
          Omega_tot_prime = -3._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-4) -4._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-5) &
                                   & -(rhonu_tot+presnu_tot)/(eft_par_cache%h0_Mpc**2*a2*a)
-         Hdot = adotoa**2 +0.25_dl*(eft_par_cache%h0_Mpc)**2*a**3*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime
+         Hdot = adotoa**2. +0.25_dl*(eft_par_cache%h0_Mpc)**2.*a**3.*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime
 
-         
+
 
          rhonu_tot  = 0._dl
          presnu_tot = 0._dl
@@ -385,15 +388,15 @@ contains
                     &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprime)/((Omega_tot**2 +  4._dl*Omega_phi0)**(2.5))-12._dl*Omega_phi0*((Omega_tot_prime)**4+3._dl*Omega_tot*(Omega_tot_prime)**2*Omega_tot_primeprime)/&
                     &((Omega_tot**2 +  4._dl*Omega_phi0)**(2.5)) +60._dl*Omega_phi0*(Omega_tot**2*(Omega_tot_prime)**4)/((Omega_tot**2 +4._dl*Omega_phi0)**(3.5)))
 
-        
+
 
 
           if ( a == 0._dl ) then
               return
           else if ( adotoa  == 0._dl ) then
               if  ( adotoa  == 0._dl ) return
-              if  ( Hdot    == 0._dl ) return 
-              if  ( Hdotdot == 0._dl ) return 
+              if  ( Hdot    == 0._dl ) return
+              if  ( Hdotdot == 0._dl ) return
           end if
           !
           ! compute the psi field and its derivatives
@@ -419,16 +422,16 @@ contains
           !phip5 = -( psiprimeprimeprime -3._dl*phip3 )/a2+( psiprimeprimeprimeprime -3._dl*phip4 )/a
           !
           Chi = XDS*((a*Hds)/adotoa)**((2*s)/p)! from tracker@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-         
+
           ChiPrime =(2._dl*s*Chi*(adotoa - a*adotoaPrime))/(a*p*adotoa) !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
           ChiPrimePrime = (2._dl*s*Chi*(-((p - 2._dl*s)*adotoa**2) + a**2*(p + 2._dl*s)*adotoaPrime**2 - a*adotoa*(4._dl*s*adotoaPrime + a*p*adotoaPrimePrime)))/(a**2*p**2*adotoa**2)!@@@@@@@@@@@@@@@@
 
-          ChiPrimePrimePrime = (2._dl*s*Chi*(2._dl*(p**2 - 3._dl*p*s + 2._dl*s**2)*adotoa**3 - 2._dl*a**3*(p**2 + 3._dl*p*s + 2._dl*s**2)*adotoaPrime**3 + 3._dl*a**2*(p + 2._dl*s)*adotoa*adotoaPrime*(2._dl*s*adotoaPrime +&
-& a*p*adotoaPrimePrime) - a*adotoa**2*(-6._dl*(p - 2._dl*s)*s*adotoaPrime + a*p*(6._dl*s*adotoaPrimePrime + a*p*adotoaPrimePrimePrime))))/(a**3*p**3*adotoa**3)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+          ChiPrimePrimePrime = (2._dl*s*Chi*(2._dl*(p**2 - 3._dl*p*s + 2._dl*s**2)*adotoa**3 - 2._dl*a**3*(p**2 + 3._dl*p*s + 2._dl*s**2)*adotoaPrime**3 + 3._dl*a**2*(p + 2._dl*s)*adotoa*adotoaPrime&
+              &*(2._dl*s*adotoaPrime + a*p*adotoaPrimePrime) - a*adotoa**2*(-6._dl*(p - 2._dl*s)*s*adotoaPrime + a*p*(6._dl*s*adotoaPrimePrime + a*p*adotoaPrimePrimePrime))))/(a**3*p**3*adotoa**3)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
           !ChiPrimePrimePrimePrime = (2*s*Chi*((-6*p**3 + 22*p**2*s - 24*p*s**2 + 8*s**3)*adotoa**4 + 2*a**4*(3*p**3 + 11*p**2*s + 12*p*s**2 + 4*s**3)*adotoaPrime**4 -4*a**3*(p**2 + 3*p*s + 2*s**2)*adotoa*adotoaPrime**2*(4*s*adotoaPrime + 3*a*p*adotoaPrimePrime) + a**2*(p + 2*s)*adotoa**2*(-12*(p - 2*s)*s*adotoaPrime**2 + 3*a**2*p**2*adotoaPrimePrime**2 + 4*a*p*adotoaPrime*(6*s*adotoaPrimePrime + a*p*adotoaPrimePrimePrime)) - a*adotoa**3*(16*s*(p**2 - 3*p*s + 2*s**2)*adotoaPrime + a*p*(-12*(p - 2*s)*s*adotoaPrimePrime +  a*p*(8*s*adotoaPrimePrimePrime + a*p*adotoaPrimePrimePrimePrime)))))/(a**4*p**4*adotoa**4)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-          
+
           PhiPrime = Sqrt(-Chi)/adotoa    ! from Chi definition @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
           PhiPrimePrime = (2._dl*Chi*adotoaPrime - adotoa*ChiPrime)/(2._dl*adotoa**2*Sqrt(-Chi))           !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -441,14 +444,14 @@ contains
 & adotoa*(-3._dl*ChiPrime*adotoaPrimePrime + adotoa*ChiPrimePrimePrime)))/(8._dl*adotoa**4*(-Chi)**2.5)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
          ! compute the background EFT functions:
-          
+
          ! -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
          ! modification starts                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
          ! -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-          self%EFTOmega%y(ind)    = -1._dl - (2._dl*c4*adotoa**((2._dl*p*(2._dl + s))/s)*PhiPrime**((2._dl*p*(2._dl + s))/s))/((-1._dl)**((p*(2._dl + s))/s)*XDS**((p*(2._dl + s))/s))
+          self%EFTOmega%y(ind) = -1._dl - (2._dl*c4*adotoa**((2._dl*p*(2._dl + s))/s)*PhiPrime**((2._dl*p*(2._dl + s))/s))/((-1._dl)**((p*(2._dl + s))/s)*XDS**((p*(2._dl + s))/s))
 
-          self%EFTOmega%yp(ind)    = (-4._dl*c4*p*(2._dl + s)*adotoa**(-1._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**(-1._dl + (2._dl*p*(2._dl + s))/s)*(adotoa*PhiPrimePrime + PhiPrime*adotoaPrime))/((-1._dl)**((p*(2._dl + s))&
-&/s)*s*XDS**((p*(2._dl + s))/s))
+          self%EFTOmega%yp(ind)    = (-4._dl*c4*p*(2._dl + s)*adotoa**(-1._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**(-1._dl + (2._dl*p*(2._dl + s))/s)*(adotoa*PhiPrimePrime + PhiPrime*adotoaPrime))/(&
+                &(-1._dl)**((p*(2._dl + s))/s)*s*XDS**((p*(2._dl + s))/s))
 
           self%EFTOmega%ypp(ind)   =  (-4._dl*c4*p*(2._dl + s)*adotoa**(-2._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**(-2._dl + (2._dl*p*(2._dl + s))/s)*&
      &    (adotoa**2*((-s + 2._dl*p*(2._dl + s))*PhiPrimePrime**2 + s*PhiPrime*PhiPrimePrimePrime) + (-s + 2._dl*p*(2._dl + s))*PhiPrime**2*adotoaPrime**2 + &
@@ -456,13 +459,13 @@ contains
 
           self%EFTOmega%yppp(ind)  = (-4._dl*c4*p*(2._dl + s)*adotoa**(-3._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**(-3._dl + (2._dl*p*(2._dl + s))/s)*&
      &    (adotoa**3*(2._dl*(s**2 - 3._dl*p*s*(2._dl + s) + 2._dl*p**2*(2._dl + s)**2)*PhiPrimePrime**3 + 3._dl*s*(-s + 2._dl*p*(2._dl + s))*PhiPrime*PhiPrimePrime*PhiPrimePrimePrime +&
-     &         s**2*PhiPrime**2*PhiPrimePrimePrimePrime) + 2._dl*(s**2 - 3._dl*p*s*(2._dl + s) + 2._dl*p**2*(2._dl + s)**2)*PhiPrime**3*adotoaPrime**3 + & 
-     &      3._dl*(-s + 2._dl*p*(2._dl + s))*adotoa*PhiPrime**2*adotoaPrime*(2._dl*p*(2._dl + s)*PhiPrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrime) + & 
-     &      adotoa**2*PhiPrime*(6._dl*p*(2._dl + s)*(-s + 2._dl*p*(2._dl + s))*PhiPrimePrime**2*adotoaPrime + 6._dl*p*s*(2._dl + s)*PhiPrime*PhiPrimePrime*adotoaPrimePrime + & 
+     &         s**2*PhiPrime**2*PhiPrimePrimePrimePrime) + 2._dl*(s**2 - 3._dl*p*s*(2._dl + s) + 2._dl*p**2*(2._dl + s)**2)*PhiPrime**3*adotoaPrime**3 + &
+     &      3._dl*(-s + 2._dl*p*(2._dl + s))*adotoa*PhiPrime**2*adotoaPrime*(2._dl*p*(2._dl + s)*PhiPrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrime) + &
+     &      adotoa**2*PhiPrime*(6._dl*p*(2._dl + s)*(-s + 2._dl*p*(2._dl + s))*PhiPrimePrime**2*adotoaPrime + 6._dl*p*s*(2._dl + s)*PhiPrime*PhiPrimePrime*adotoaPrimePrime + &
      &         s*PhiPrime*(6._dl*p*(2._dl + s)*PhiPrimePrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrimePrime))))/((-1._dl)**((p*(2._dl + s))/s)*s**3*XDS**((p*(2._dl + s))/s))
 
-          self%EFTc%y(ind)         = (-2._dl*(-1._dl)**((p*(3._dl + 2._dl*s))/s)*a**2*c2*Hds**2*p*s**2*XDS**((p*(3._dl + 2._dl*s))/s)*adotoa**(2*p)*PhiPrime**(2 + 2*p) + & 
-     &    (-1._dl)**((2*p*(1 + s))/s)*Sqrt(2._dl)*a*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(1 + (2*p*(1 + s))/s)*(3._dl*PhiPrime - a*PhiPrimePrime)-& 
+          self%EFTc%y(ind)         = (-2._dl*(-1._dl)**((p*(3._dl + 2._dl*s))/s)*a**2*c2*Hds**2*p*s**2*XDS**((p*(3._dl + 2._dl*s))/s)*adotoa**(2*p)*PhiPrime**(2 + 2*p) + &
+     &    (-1._dl)**((2*p*(1 + s))/s)*Sqrt(2._dl)*a*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(1 + (2*p*(1 + s))/s)*(3._dl*PhiPrime - a*PhiPrimePrime)-&
      &    4._dl*(-1._dl)**(p*(2 + 1/s))*XDS**(p*(2 + 1/s))*adotoa**(2 + (2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s)* &
      &     ((-28._dl*c5*s**2 + c4*p*(2._dl + s)*(-s + 6._dl*p*(2._dl + s)))*PhiPrime**2 - a**2*c4*p*(2._dl + s)*(-s + 2._dl*p*(2._dl + s))*PhiPrimePrime**2 -  &
      &       a*p*(2._dl + s)*PhiPrime*((-3._dl*c4*s - 8._dl*c5*s + 4._dl*c4*p*(2._dl + s))*PhiPrimePrime + a*c4*s*PhiPrimePrimePrime)) +  &
@@ -474,7 +477,7 @@ contains
      &  (2._dl*(-1._dl)**((3*p*(1 + s))/s)*s**2*XDS**((3*p*(1 + s))/s)*PhiPrime**2)
 
           self%EFTLambda%y(ind)    =  ((-1._dl)**(1 + p*(2 + 3/s))*a**2*c2*Hds**2*s**2*XDS**((p*(3 + 2*s))/s)*adotoa**(2*p)*PhiPrime**(2 + 2*p) +  &
-     &    (-1._dl)**(1 + (2*p*(1 + s))/s)*Sqrt(2._dl)*a**2*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2*p*(1 + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(1 + (2*p*(1 + s))/s)*PhiPrimePrime + & 
+     &    (-1._dl)**(1 + (2*p*(1 + s))/s)*Sqrt(2._dl)*a**2*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2*p*(1 + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(1 + (2*p*(1 + s))/s)*PhiPrimePrime + &
      &    4._dl*(-1._dl)**(p*(2 + 1/s))*XDS**(p*(2 + 1/s))*adotoa**(2 + (2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s)* &
      &     (s*(-2._dl*c5*s + c4*p*(2._dl + s))*PhiPrime**2 + a**2*c4*p*(2._dl + s)*(-s + 2._dl*p*(2._dl + s))*PhiPrimePrime**2 +  &
      &       a*p*(2._dl + s)*PhiPrime*(4._dl*(-2._dl*c5*s + c4*p*(2._dl + s))*PhiPrimePrime + a*c4*s*PhiPrimePrimePrime)) +  &
@@ -482,8 +485,8 @@ contains
      &    8._dl*(-1._dl)**(p*(2 + 1/s))*a**2*c4*p**2*(2._dl + s)**2*XDS**(p*(2 + 1/s))*adotoa**((2*p*(2 + s))/s)*PhiPrime**(2 + (2*p*(2 + s))/s)*adotoaPrime**2 +  &
      &    4._dl*(-1._dl)**(p*(2 + 1/s))*a*XDS**(p*(2 + 1/s))*adotoa**(1 + (2*p*(2 + s))/s)*PhiPrime**(1 + (2*p*(2 + s))/s)* &
      &     (a*c4*p*(2._dl + s)*(s + 4._dl*p*(2._dl + s))*PhiPrimePrime*adotoaPrime + PhiPrime*(2._dl*(s + 2._dl*p*(2._dl + s))*(-2._dl*c5*s + c4*p*(2._dl + s))*adotoaPrime &
-     &   + a*c4*p*s*(2._dl + s)*adotoaPrimePrime)))      
- 
+     &   + a*c4*p*s*(2._dl + s)*adotoaPrimePrime)))
+
 
           self%EFTc%yp(ind)      = (-4._dl*(-1._dl)**((p*(3 + 2*s))/s)*a**3*c2*Hds**2*p**2*s**3*XDS**((p*(3 + 2*s))/s)*adotoa**(1 + 2*p)*PhiPrime**(2 + 2*p)*PhiPrimePrime + &
      &    (-1._dl)**(1 + (2*p*(1 + s))/s)*Sqrt(2._dl)*a*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2*p*(1 + s))/s)*adotoa**(2*(1 + p + p/s))*PhiPrime**(1 + (2*p*(1 + s))/s)*&
@@ -510,36 +513,6 @@ contains
      &          a*s*((4._dl*c5*s*(s + 2._dl*p*(2._dl + s)) - c4*p*(2._dl + s)*(-s + 4._dl*p*(2._dl + s)))*adotoaPrimePrime - a*c4*p*s*(2._dl + s)*adotoaPrimePrimePrime))))/&
      &  (2._dl*(-1._dl)**((3*p*(1 + s))/s)*s**3*XDS**((3*p*(1 + s))/s)*PhiPrime**3)
 
-
-           !self%EFTc%yp(ind) = (-4._dl*(-1._dl)**((p*(3 + 2*s))/s)*a**3*c2*Hds**2*p**2*s**3*XDS**((p*(3 + 2*s))/s)*adotoa**(1 + 2*p)*PhiPrime**(2 + 2*p)*PhiPrimePrime + &
-  !   &    (-1._dl)**(1 + (2*p*(1 + s))/s)*Sqrt(2._dl)*a*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2*p*(1 + s))/s)*adotoa**(2*(1 + p + p/s))*PhiPrime**(1 + (2*p*(1 + s))/s)*&
-  !   &     (3._dl*s*PhiPrime**2 + a**2*(-s + 2._dl*p*(1._dl + s))*PhiPrimePrime**2 + a*PhiPrime*(-6._dl*p*(1._dl + s)*PhiPrimePrime + a*s*PhiPrimePrimePrime)) - &
-  !   &    4._dl*(-1._dl)**(p*(2 + 1/s))*XDS**(p*(2 + 1/s))*adotoa**(3 + (2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s)*&
-  !   &     (2._dl*s*(28._dl*c5*s**2 - c4*p*(2._dl + s)*(-s + 6._dl*p*(2._dl + s)))*PhiPrime**3 - 2._dl*a**3*c4*p*(2._dl + s)*(s**2 - 3._dl*p*s*(2._dl + s) &    
-  !   & + 2._dl*p**2*(2._dl + s)**2)*PhiPrimePrime**3 - &
-  !   &       a**2*p*(2._dl + s)*(-s + 2._dl*p*(2._dl + s))*PhiPrime*PhiPrimePrime*((-3._dl*c4*s - 8._dl*c5*s + 4._dl*c4*p*(2._dl + s))*PhiPrimePrime &
-  !   & + 3._dl*a*c4*s*PhiPrimePrimePrime) + &
-  !   &       a*p*(2._dl + s)*PhiPrime**2*((-64._dl*c5*s**2 + c4*(-3._dl*s**2 + 2._dl*p*s*(2._dl + s) + 12._dl*p**2*(2._dl + s)**2))*PhiPrimePrime - &
-  !   &          a*s*((-3._dl*c4*s - 8._dl*c5*s + 4._dl*c4*p*(2._dl + s))*PhiPrimePrimePrime + a*c4*s*PhiPrimePrimePrimePrime))) - &
-  !   &    4._dl*(-1._dl)**((p*(3 + 2*s))/s)*a**3*c2*Hds**2*p**2*s**3*XDS**((p*(3 + 2*s))/s)*adotoa**(2*p)*PhiPrime**(3 + 2*p)*adotoaPrime - &
-  !   &    2._dl*(-1._dl)**((2*p*(1 + s))/s)*Sqrt(2._dl)*a**3*c3*Hds*p*s*(1._dl + s)*(-s + 2._dl*p*(1._dl + s))*XDS**((2*p*(1 + s))/s)*adotoa**((2*p*(1 + s))/s)&
-  !   &   *PhiPrime**(3 + (2*p*(1 + s))/s)*adotoaPrime**2 + &
-  !   &    16._dl*(-1._dl)**(p*(2 + 1/s))*a**3*c4*p**3*(2._dl + s)**3*XDS**(p*(2 + 1/s))*adotoa**((2*p*(2 + s))/s)*PhiPrime**(3 + (2*p*(2 + s))/s)*adotoaPrime**3 + &
-  !   &    (-1._dl)**((2*p*(1 + s))/s)*Sqrt(2._dl)*a**2*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2*p*(1 + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*&
-  !   &     (-(a*(s + 4*p*(1 + s))*PhiPrimePrime*adotoaPrime) + PhiPrime*(3*(s + 2*p*(1 + s))*adotoaPrime - a*s*adotoaPrimePrime)) + &
-  !   &    4._dl*(-1._dl)**(p*(2 + 1/s))*a**2*XDS**(p*(2 + 1/s))*adotoa**(1 + (2*p*(2 + s))/s)*PhiPrime**(2 + (2*p*(2 + s))/s)*adotoaPrime*&
-  !   &     (a*c4*p*(2._dl + s)*(s**2 + 6._dl*p*s*(2._dl + s) + 12._dl*p**2*(2._dl + s)**2)*PhiPrimePrime*adotoaPrime + &
-  !   &       PhiPrime*((s + 2._dl*p*(2._dl + s))*(-4._dl*c5*s*(s + 2._dl*p*(2._dl + s)) + c4*p*(2._dl + s)*(-s + 4._dl*p*(2._dl + s)))*adotoaPrime &
-  !   &+ a*c4*p*s*(2._dl + s)*(s + 6._dl*p*(2._dl + s))*adotoaPrimePrime)) + &
-  !   &    4._dl*(-1._dl)**(p*(2 + 1/s))*a*XDS**(p*(2 + 1/s))*adotoa**(2 + (2*p*(2 + s))/s)*PhiPrime**(1 + (2*p*(2 + s))/s)*&
-  !   &     (3._dl)*a**2._dl)*c4*p*(2._dl) + s)*(-s**2) + 4._dl)*p**2*(2._dl) + s)**2)*PhiPrimePrime**2*adotoaPrime + &
-  !   &       a*p*(2._dl + s)*PhiPrime*(3._dl*a*c4*s*(s + 2._dl*p*(2._dl + s))*PhiPrimePrimePrime*adotoaPrime + &
-  !   &          PhiPrimePrime*(2._dl*(-4._dl*c5*s*(3._dl*s + 4._dl*p*(2._dl + s)) + c4*(-3._dl*s**2._dl + 8._dl*p**2*(2._dl + s)**2))*adotoaPrime &
-  !   &+ a*c4*s*(s + 6._dl*p*(2._dl + s))*adotoaPrimePrime)) - &
-  !   &       PhiPrime**2*((-4._dl*c5*s**2*(15._dl*s + 16._dl*p*(2._dl + s)) + c4*p*(2._dl + s)*(-3._dl*s**2 + 14._dl*p*s*(2._dl + s) + 12._dl*p**2*(2._dl + s)**2))*adotoaPrime + &
-  !   &          a*s*((4._dl*c5*s*(s + 2._dl*p*(2._dl + s)) - c4*p*(2._dl + s)*(-s + 4._dl*p*(2 + s)))*adotoaPrimePrime - a*c4*p*s*(2._dl + s)*adotoaPrimePrimePrime))))/&
-  !   &  (2._dl*(-1._dl)**((3*p*(1 + s))/s)*s**3*XDS**((3*p*(1 + s))/s)*PhiPrime**3)
-
           self%EFTLambda%yp(ind) =  (-2._dl*(-1._dl)**(p*(2 + 3/s))*a**3*c2*Hds**2*p*s**3*XDS**((p*(3 + 2*s))/s)*adotoa**(1 + 2*p)*PhiPrime**(2 + 2*p)*PhiPrimePrime + &
      &    (-1._dl)**(1 + (2*p*(1 + s))/s)*Sqrt(2._dl)*a**3*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2*p*(1 + s))/s)*adotoa**(2*(1 + p + p/s))*PhiPrime**(1 + (2*p*(1 + s))/s)*&
      &     ((-s + 2._dl*p*(1._dl + s))*PhiPrimePrime**2 + s*PhiPrime*PhiPrimePrimePrime) + &
@@ -560,7 +533,7 @@ contains
      &       a*p*(2._dl + s)*PhiPrime*(3._dl*a*c4*s*(s + 2._dl*p*(2._dl + s))*PhiPrimePrimePrime*adotoaPrime + &
      &          PhiPrimePrime*(4._dl*(3._dl*s + 4._dl*p*(2._dl+ s))*(-2._dl*c5*s + c4*p*(2._dl + s))*adotoaPrime + a*c4*s*(s + 6._dl*p*(2._dl + s))*adotoaPrimePrime)) + &
      &      s*PhiPrime**2*(-2._dl*p*(2._dl + s)*(-2._dl*c5*s + c4*p*(2._dl + s))*adotoaPrime + a*(2._dl*(s + 2._dl*p*(2._dl + s))*(-2._dl*c5*s + c4*p*(2._dl + s))*adotoaPrimePrime + a*c4*p*s*(2._dl + s)*adotoaPrimePrimePrime))))/&
-     &  ((-1._dl)**((3*p*(1 + s))/s)*s**3*XDS**((3*p*(1 + s))/s)*PhiPrime**3)      
+     &  ((-1._dl)**((3*p*(1 + s))/s)*s**3*XDS**((3*p*(1 + s))/s)*PhiPrime**3)
 
           self%EFTgamma1%y(ind)  =  ((-4._dl*a**2*c2*Hds**2*(-1._dl + p)*p*s**3*adotoa**(2*p)*PhiPrime**(2*p))/((-1)**p*XDS**p) + &
      &    (Sqrt(2._dl)*a*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*adotoa**((2*p*(1 + s))/s)*PhiPrime**(-1 + (2*p*(1 + s))/s)*&
@@ -663,8 +636,7 @@ contains
         logical                            :: print_params_temp
 
         ! print general model informations:
-        if ( self%c2 == -1._dl ) then
-
+        if (.not.self%c2==0._dl)then
           write(*,*)
           write(*,'(a,a)')    '   Model               =  ', self%name
           write(*,'(a,I3)')   '   Number of params    ='  , self%parameter_number
@@ -675,8 +647,8 @@ contains
           write(*,'(a,F12.6)')   '                 c3    ='  , self%c3
           write(*,'(a,F12.6)')   '                 c4    ='  , self%c4
           write(*,'(a,F12.6)')   '                 c5    ='  , self%c5
-
         end if
+
         ! print the values of the parameters:
         if ( present(print_params) ) then
             print_params_temp = print_params
@@ -873,6 +845,39 @@ contains
     end subroutine EFTCAMBWBGalileonSecondOrderEFTFunctions
 
     ! ---------------------------------------------------------------------------------------------
+    !> Function that computes dtauda = 1/sqrt(a^2H^2).
+    function EFTCAMBWBGalileonComputeDtauda( self, a, eft_par_cache, eft_cache )
+
+        implicit none
+
+        class(EFTCAMB_WB_Galileon)                    :: self          !< the base class
+        real(dl), intent(in)                         :: a             !< the input scale factor.
+        type(EFTCAMB_parameter_cache), intent(inout) :: eft_par_cache !< the EFTCAMB parameter cache that contains all the physical parameters.
+        type(EFTCAMB_timestep_cache ), intent(inout) :: eft_cache     !< the EFTCAMB timestep cache that contains all the physical values.
+
+        real(dl) :: EFTCAMBWBGalileonComputeDtauda ,temp                    !< the output dtauda
+
+        real(dl) :: a2!, ax=0._dl
+
+        a2=a*a
+
+        if (a*eft_cache%adotoa==0._dl) then
+
+          EFTCAMBWBGalileonComputeDtauda = 1._dl/sqrt( eft_cache%grhoa2/3._dl )
+
+        else
+          call self%compute_adotoa( a, eft_par_cache, eft_cache )
+          call self%compute_H_derivs( a, eft_par_cache, eft_cache )
+          call self%compute_background_EFT_functions( a, eft_par_cache, eft_cache )
+
+          EFTCAMBWBGalileonComputeDtauda = 1._dl/sqrt( ( eft_cache%grhoa2/3._dl +2._dl/3._dl*eft_cache%EFTc*a2 -a2*eft_cache%EFTLambda/3._dl ) &
+                                        & /( 1._dl +eft_cache%EFTOmegaV +a*eft_cache%EFTOmegaP ) )
+        end if
+
+    end function EFTCAMBWBGalileonComputeDtauda
+
+
+    ! ---------------------------------------------------------------------------------------------
     !> Subroutine that computes adotoa = H.
     subroutine EFTCAMBWBGalileonComputeAdotoa( self, a, eft_par_cache, eft_cache )
 
@@ -904,9 +909,9 @@ contains
         type(EFTCAMB_timestep_cache ), intent(inout) :: eft_cache     !< the EFTCAMB timestep cache that contains all the physical values.
 
         real(dl) :: temp, a2, Omega_tot, Omega_tot_prime, Omega_tot_primeprime,Omega_tot_primeprimeprime, Omega_phi0, Omega_tot_primeprimeprimeprime
-        
+
         a2 = a*a
-        
+
         if(a*eft_cache%adotoa==0._dl) return
 
         Omega_tot = ( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-3) + ( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-4) +eft_cache%grhonu_tot/(3._dl*eft_par_cache%h0_Mpc**2*a2)
