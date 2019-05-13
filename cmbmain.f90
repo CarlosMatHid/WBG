@@ -116,7 +116,7 @@
     integer :: l_smooth_sample = 3000 !assume transfer functions effectively small for k>2*l_smooth_sample
 
 #ifndef fixq
-    real(dl) :: fixq = 1000._dl !Debug output of one q !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 0
+    real(dl) :: fixq = 0._dl !Debug output of one q !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 0
 #endif
 #ifndef fixq_array
     real(dl), parameter, dimension(1) :: fixq_array = [ 0._dl ]
