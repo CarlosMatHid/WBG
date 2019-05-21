@@ -50,11 +50,11 @@ module EFTCAMB_full_WB_Galileon
         real(dl)  :: c4      !< WB Galileon model parameter \f$c_4\f$
         real(dl)  :: c5      !< WB Galileon model parameter \f$c_5\f$
         real(dl)  :: XDS     !< WB Galileon model parameter \f$\XDS\f$ derived from the tracker solution --- Adimensional (  XDS*M**(-2)*H0**(-2)  )
-        real(dl)  :: p       !< WB Galileon Background parameter \f$\XDS\f$ derived from the tracker solution          
-        real(dl)  :: s       !< WB Galileon Background parameter \f$\XDS\f$ derived from the tracker solution         
+        real(dl)  :: p       !< WB Galileon Background parameter \f$\XDS\f$ derived from the tracker solution
+        real(dl)  :: s       !< WB Galileon Background parameter \f$\XDS\f$ derived from the tracker solution
 
         ! useful variable to have:
-        real(dl)  :: Hds               
+        real(dl)  :: Hds
 
         ! the interpolated EFT functions that come out of the background sover:
         type(equispaced_linear_interpolate_function_1D) :: EFTOmega       !< The interpolated function Omega (and derivatives).
@@ -64,7 +64,7 @@ module EFTCAMB_full_WB_Galileon
         type(equispaced_linear_interpolate_function_1D) :: EFTgamma2      !< The interpolated function \f$\gamma_2\f$ (and derivatives).
         type(equispaced_linear_interpolate_function_1D) :: EFTgamma3      !< The interpolated function \f$\gamma_3\f$ (and derivatives).
         type(equispaced_linear_interpolate_function_1D) :: EFTgamma4      !< The interpolated function \f$\gamma_4\f$ (and derivatives).
-        type(equispaced_linear_interpolate_function_1D) :: EFTgamma5      !< The interpolated function \f$\gamma_5\f$ (and derivatives). 
+        type(equispaced_linear_interpolate_function_1D) :: EFTgamma5      !< The interpolated function \f$\gamma_5\f$ (and derivatives).
 
         ! some designer parameters:
         integer  :: designer_num_points = 1000                            !< Number of points sampled by the designer code.
@@ -140,8 +140,8 @@ contains
         real(dl), dimension(self%parameter_number), intent(in)     :: array  !< input array with the values of the parameters of the model.
 
         ! read model parameters:
-        self%XDS = array(1) 
-        self%p = array(2)  
+        self%XDS = array(1)
+        self%p = array(2)
         self%s = array(3)
 
     end subroutine EFTCAMBWBGalileonInitModelParameters
@@ -178,7 +178,7 @@ contains
         !Omega_phi0 = params_cache%omegav
 
         ! WB -> just c_4 and c_5
-        self%c4 = 0.09091572505372525 ! this value can be fixed by scaling degeneracy of the scalar field. This value in particular was chosen to match covariant galileon (together with the rigth s, p and XDS) 
+        self%c4 = 0.09091572505372525 ! this value can be fixed by scaling degeneracy of the scalar field. This value in particular was chosen to match covariant galileon (together with the rigth s, p and XDS)
         self%c5 = 0._dl
         self%c2 = 3._dl - 6._dl*self%c4 - 24._dl*self%c5 + 12._dl*self%c4*self%p + (24._dl*self%c4*self%p)/self%s
         self%c3 =    (sqrt(2._dl)*self%p)/(-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s) - (4._dl*sqrt(2._dl)*self%c4*self%p)/(-1._dl + 2._dl*self%p + (2._dl*self%p)/self%s) &
@@ -257,28 +257,28 @@ contains
          real(dl) :: rhonu, presnu, grhormass_t,presnudotdotdot,presnudotdot,presnudot
          real(dl) :: adotoa, Hdot,Hdotdot,Hddd, Hdddd
 
-         real(dl) :: adotoaPrime, adotoaPrimePrime, adotoaPrimePrimePrime, adotoaPrimePrimePrimePrime 
+         real(dl) :: adotoaPrime, adotoaPrimePrime, adotoaPrimePrimePrime, adotoaPrimePrimePrimePrime
          real(dl) :: Phi, PhiPrime, PhiPrimePrime, PhiPrimePrimePrime, PhiPrimePrimePrimePrime, m0
          integer  :: nu_i
 
          real(dl) :: Chi, ChiP, ChiPP, ChiPPP
 
-         real(dl) :: s, p, XDS, c2, c3, c4, c5, Hds  
+         real(dl) :: s, p, XDS, c2, c3, c4, c5, Hds
 
          a = Exp(x)
          a2 = a*a
          m0 = 1._dl
 
-         s = self%s                                      
-         p = self%p                                      
-         XDS = self%XDS*eft_par_cache%h0_Mpc**2*m0**2    
+         s = self%s
+         p = self%p
+         XDS = self%XDS*eft_par_cache%h0_Mpc**2*m0**2
 
-         c2 = self%c2                                    
-         c3 = self%c3                                   
-         c4 = self%c4                                   
-         c5 = self%c5                           
+         c2 = self%c2
+         c3 = self%c3
+         c4 = self%c4
+         c5 = self%c5
 
-         Hds = self%Hds                                
+         Hds = self%Hds
 
 
 
@@ -397,7 +397,7 @@ contains
          adotoaPrimePrimePrimePrime =   (-15._dl*Hdot**4. + 25._dl*Hdot**2.*Hdotdot*adotoa - 18._dl*Hdot**3.*adotoa**2. - 4._dl*Hdotdot**2.*adotoa**2. - 7._dl*Hdot*Hddd*adotoa**2. + 24._dl*Hdot*Hdotdot*adotoa**3. + Hdddd*adotoa**3. &
              & - 11._dl*Hdot**2.*adotoa**4. - 6._dl*Hddd*adotoa**4. + 11._dl*Hdotdot*adotoa**5. - 6._dl*Hdot*adotoa**6.)/(a**4.*adotoa**7.)
 
-          write(31, *) a, adotoa/eft_par_cache%h0_Mpc, adotoaPrime/eft_par_cache%h0_Mpc, adotoaPrimePrime/eft_par_cache%h0_Mpc, adotoaPrimePrimePrime/eft_par_cache%h0_Mpc, adotoaPrimePrimePrimePrime/eft_par_cache%h0_Mpc
+          ! write(31, *) a, adotoa/eft_par_cache%h0_Mpc, adotoaPrime/eft_par_cache%h0_Mpc, adotoaPrimePrime/eft_par_cache%h0_Mpc, adotoaPrimePrimePrime/eft_par_cache%h0_Mpc, adotoaPrimePrimePrimePrime/eft_par_cache%h0_Mpc
 
           if ( a == 0._dl ) then
               return
@@ -407,14 +407,14 @@ contains
               if  ( Hdotdot == 0._dl ) return
           end if
           !
-!!!!!!!!!!!!!!!!!!!!!!!!!! Note: 
-! in these definitions XDS is changed to -XDS because X is defined negative and XDS positive. 
+!!!!!!!!!!!!!!!!!!!!!!!!!! Note:
+! in these definitions XDS is changed to -XDS because X is defined negative and XDS positive.
 ! This comes from the fact that in Simone's paper (Covariant Galileon: 1711.04760) X is defined with opposite sign than in my notation (De Felice's notation: 1110.3878)
 ! To find the mapping from SP aforementioned paper I need to account for this sign difference in X. However, I do not make that change in XDS to avoid annoying minus signs. Instead,
 ! I will use a positive XDS from the beginning.
 
         Chi =  (-XDS)*((a*Hds)/adotoa)**(s/p)
- 
+
         ChiP = (s*((-XDS)*((a*Hds)/adotoa)**(s/p))*(adotoa - a*adotoaPrime))/(a*p*adotoa)
 
         ChiPP =  (s*((-XDS)*((a*Hds)/adotoa)**(s/p))*((-p + s)*adotoa**2._dl + a**2._dl*(p + s)*adotoaPrime**2._dl - &
@@ -429,7 +429,7 @@ contains
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         PhiPrime = Sqrt(-Chi)/adotoa
-          write(9002,*)a, PhiPrime
+          ! write(9002,*)a, PhiPrime
         PhiPrimePrime = (2._dl*Chi*adotoaPrime - adotoa*ChiP)/(2._dl*adotoa**2._dl*Sqrt(-Chi))
 
         PhiPrimePrimePrime =    -(adotoa**2._dl*ChiP**2._dl + Chi**2._dl*(-8._dl*adotoaPrime**2._dl + 4._dl*adotoa*adotoaPrimePrime) - &
@@ -443,10 +443,10 @@ contains
                  &     (6._dl*adotoaPrime**2._dl*ChiP - 3._dl*adotoa*adotoaPrime*ChiPP + &
                  &       adotoa*(-3._dl*ChiP*adotoaPrimePrime + adotoa*ChiPPP)))/(8._dl*adotoa**4._dl*(-Chi)**2.5)
 
-           write(33, *) a, PhiPrime,PhiPrimePrime,PhiPrimePrimePrime,PhiPrimePrimePrimePrime
-           write(333, *) a,Chi/(-XDS), ChiP/(-XDS),ChiPP/(-XDS)
-           write(34, *) p, s, c2, c3, c4, c5
-           write(9003,*) Hds/eft_par_cache%h0_Mpc, XDS
+           ! write(33, *) a, PhiPrime,PhiPrimePrime,PhiPrimePrimePrime,PhiPrimePrimePrimePrime
+           ! write(333, *) a,Chi/(-XDS), ChiP/(-XDS),ChiPP/(-XDS)
+           ! write(34, *) p, s, c2, c3, c4, c5
+           ! write(9003,*) Hds/eft_par_cache%h0_Mpc, XDS
           !
 
          ! compute the background EFT functions:-------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -472,7 +472,7 @@ contains
      &      adotoa**2._dl*PhiPrime*(6._dl*p*(2._dl + s)*(-s + 2._dl*p*(2._dl + s))*PhiPrimePrime**2._dl*adotoaPrime + &
      &         6._dl*p*s*(2._dl + s)*PhiPrime*PhiPrimePrime*adotoaPrimePrime + &
      &         s*PhiPrime*(6._dl*p*(2._dl + s)*PhiPrimePrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrimePrime))))/&
-     &  (s**3._dl*XDS**((p*(2._dl + s))/s)) 
+     &  (s**3._dl*XDS**((p*(2._dl + s))/s))
 
           self%EFTc%y(ind)      =   (-2._dl*a**2._dl*c2*Hds**2._dl*p*s**2._dl*XDS**(p*(2._dl + 3._dl/s))*adotoa**(2._dl*p)*PhiPrime**(2._dl + 2._dl*p) + &
      &    Sqrt(2._dl)*a*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**(1._dl + (2._dl*p*(1._dl + s))/s)*&
@@ -486,7 +486,7 @@ contains
      &    4._dl*a*XDS**(p*(2._dl + 1._dl/s))*adotoa**(1._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**(1._dl + (2._dl*p*(2._dl + s))/s)*&
      &     (a*c4*p*(2._dl + s)*(s + 4._dl*p*(2._dl + s))*PhiPrimePrime*adotoaPrime + &
      &       PhiPrime*((-4._dl*c5*s*(s + 2._dl*p*(2._dl + s)) + c4*p*(2._dl + s)*(-s + 4._dl*p*(2._dl + s)))*adotoaPrime + &
-     &          a*c4*p*s*(2._dl + s)*adotoaPrimePrime)))/(2._dl*s**2._dl*XDS**((3._dl*p*(1._dl + s))/s)*PhiPrime**2._dl) 
+     &          a*c4*p*s*(2._dl + s)*adotoaPrimePrime)))/(2._dl*s**2._dl*XDS**((3._dl*p*(1._dl + s))/s)*PhiPrime**2._dl)
 
           self%EFTLambda%y(ind)   =  (-(a**2._dl*c2*Hds**2._dl*s**2._dl*XDS**(p*(2._dl + 3._dl/s))*adotoa**(2._dl*p)*PhiPrime**(2._dl + 2._dl*p)) - &
      &    Sqrt(2._dl)*a**2._dl*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**(1._dl + (2._dl*p*(1._dl + s))/s)*&
@@ -531,7 +531,7 @@ contains
      &             a*c4*s*(s + 6._dl*p*(2._dl + s))*adotoaPrimePrime)) - &
      &       PhiPrime**2._dl*((-4._dl*c5*s**2._dl*(15._dl*s + 16._dl*p*(2._dl + s)) + c4*p*(2._dl + s)*(-3._dl*s**2._dl + 14._dl*p*s*(2._dl + s) + 12._dl*p**2._dl*(2._dl + s)**2._dl))*&
      &           adotoaPrime + a*s*((4._dl*c5*s*(s + 2._dl*p*(2._dl + s)) - c4*p*(2._dl + s)*(-s + 4._dl*p*(2._dl + s)))*adotoaPrimePrime - &
-     &             a*c4*p*s*(2._dl + s)*adotoaPrimePrimePrime))))/(2._dl*s**3._dl*XDS**((3._dl*p*(1._dl + s))/s)*PhiPrime**3._dl) 
+     &             a*c4*p*s*(2._dl + s)*adotoaPrimePrimePrime))))/(2._dl*s**3._dl*XDS**((3._dl*p*(1._dl + s))/s)*PhiPrime**3._dl)
 
           self%EFTLambda%yp(ind) =  (-2._dl*a**3._dl*c2*Hds**2._dl*p*s**3._dl*XDS**(p*(2._dl + 3._dl/s))*adotoa**(1._dl + 2._dl*p)*PhiPrime**(2._dl + 2._dl*p)*PhiPrimePrime - &
      &    Sqrt(2._dl)*a**3._dl*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**(2._dl*(1._dl + p + p/s))*PhiPrime**(1._dl + (2._dl*p*(1._dl + s))/s)*&
@@ -561,7 +561,7 @@ contains
      &             a*c4*s*(s + 6._dl*p*(2._dl + s))*adotoaPrimePrime)) + &
      &       s*PhiPrime**2._dl*(-2._dl*p*(2._dl + s)*(-2._dl*c5*s + c4*p*(2._dl + s))*adotoaPrime + &
      &          a*(2._dl*(s + 2._dl*p*(2._dl + s))*(-2._dl*c5*s + c4*p*(2._dl + s))*adotoaPrimePrime + a*c4*p*s*(2._dl + s)*adotoaPrimePrimePrime))))/&
-     &  (s**3._dl*XDS**((3._dl*p*(1._dl + s))/s)*PhiPrime**3._dl)  
+     &  (s**3._dl*XDS**((3._dl*p*(1._dl + s))/s)*PhiPrime**3._dl)
 
           self%EFTgamma1%y(ind)  =  ((-4._dl*a**2._dl*c2*Hds**2._dl*(-1._dl + p)*p*s**3._dl*adotoa**(2._dl*p)*PhiPrime**(2._dl*p))/XDS**p + &
      &    (Sqrt(2._dl)*a*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*adotoa**((2._dl*p*(1._dl + s))/s)*PhiPrime**(-1._dl + (2._dl*p*(1._dl + s))/s)*&
@@ -650,16 +650,16 @@ contains
      &    (adotoa**2._dl*((-s + 2._dl*p*(2._dl + s))*PhiPrimePrime**2._dl + s*PhiPrime*PhiPrimePrimePrime) + &
      &      (-s + 2._dl*p*(2._dl + s))*PhiPrime**2._dl*adotoaPrime**2._dl + &
      &      adotoa*PhiPrime*(4._dl*p*(2._dl + s)*PhiPrimePrime*adotoaPrime + s*PhiPrime*adotoaPrimePrime)))/&
-     &  (s**3._dl*XDS**((p*(2._dl + s))/s)) 
+     &  (s**3._dl*XDS**((p*(2._dl + s))/s))
  !         self%EFTgamma5%y(ind)  = 1/2*self%EFTgamma3%y(ind)
 
  !         self%EFTgamma5%yp(ind)  =  1/2*self%EFTgamma3%yp(ind)
 
 
-           write(35, *) a, self%EFTOmega%y(ind), self%EFTOmega%yp(ind), self%EFTc%y(ind), self%EFTc%yp(ind), self%EFTLambda%y(ind), self%EFTLambda%yp(ind)
-           write(36, *) a, self%EFTgamma1%y(ind), self%EFTgamma2%y(ind), self%EFTgamma3%y(ind), self%EFTgamma4%y(ind)
-           write(37, *) a, self%EFTgamma1%yp(ind), self%EFTgamma2%yp(ind), self%EFTgamma3%yp(ind), self%EFTgamma4%yp(ind), self%EFTgamma4%ypp(ind)
-
+           ! write(35, *) a, self%EFTOmega%y(ind), self%EFTOmega%yp(ind), self%EFTc%y(ind), self%EFTc%yp(ind), self%EFTLambda%y(ind), self%EFTLambda%yp(ind)
+           ! write(36, *) a, self%EFTgamma1%y(ind), self%EFTgamma2%y(ind), self%EFTgamma3%y(ind), self%EFTgamma4%y(ind)
+           ! write(37, *) a, self%EFTgamma1%yp(ind), self%EFTgamma2%yp(ind), self%EFTgamma3%yp(ind), self%EFTgamma4%yp(ind), self%EFTgamma4%ypp(ind)
+           !
         ! ------------------------------------------------------------------------------------------------------------------------------------------------------------------
           end subroutine
 
@@ -730,17 +730,17 @@ contains
         end if
         ! return the appropriate name:
         if ( i==1 ) then
-            name = 'WB_Galileon_XDS'   
+            name = 'WB_Galileon_XDS'
             return
         end if
-        if ( i==2 ) then               
-            name = 'WB_Galileon_p'     
-            return                     
-        end if                         
-        if ( i==3 ) then               
-            name = 'WB_Galileon_s'     
-            return                     
-        end if                         
+        if ( i==2 ) then
+            name = 'WB_Galileon_p'
+            return
+        end if
+        if ( i==3 ) then
+            name = 'WB_Galileon_s'
+            return
+        end if
         if ( i==0 ) then
             name = 'no_name'
             return
@@ -769,15 +769,15 @@ contains
             latexname = '\Xi_{DS}'
             return
         end if
-        if ( i==2 ) then    
+        if ( i==2 ) then
             latexname = 'p'
             return
         end if
-        if ( i==2 ) then    
+        if ( i==2 ) then
             latexname = 's'
             return
         end if
-        if ( i==0 ) then    
+        if ( i==0 ) then
             latexname = 'noname'
             return
         end if
@@ -806,15 +806,15 @@ contains
             return
         end if
         if ( i==1 ) then
-            value = self%XDS 
+            value = self%XDS
             return
         end if
         if ( i==2 ) then
-            value = self%p 
+            value = self%p
             return
         end if
         if ( i==3 ) then
-            value = self%s 
+            value = self%s
             return
         end if
 
@@ -942,12 +942,53 @@ contains
         type(EFTCAMB_parameter_cache), intent(inout) :: eft_par_cache !< the EFTCAMB parameter cache that contains all the physical parameters.
         type(EFTCAMB_timestep_cache ), intent(inout) :: eft_cache     !< the EFTCAMB timestep cache that contains all the physical values.
 
-        real(dl)    :: temp, a2, Omega_tot
+        !SP: old code
+        ! real(dl)    :: temp, a2, Omega_tot
+        !
+        ! a2 = a*a
+        ! Omega_tot = ( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-3) + ( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-4) +eft_cache%grhonu_tot/(3._dl*eft_par_cache%h0_Mpc**2*a2)
+        ! temp = 0.5_dl*a2*(eft_par_cache%h0_Mpc)**2*( Omega_tot + sqrt( Omega_tot**2 +4._dl*eft_par_cache%omegav ) )
+        ! eft_cache%adotoa = sqrt( temp )
 
+        !SP: new code
+        real(dl)    :: temp, a2, Omega_tot
+        integer     :: nu_i , counter
+	      real(dl)::limit1, limit2, flimit1, flimit2, dmean, solution, fsolution, bolean !solution=H/H0
+        real(dl) :: Omega_phi0
+	      real(dl) :: ATemp1, ATemp2, BTemp1, BTemp2, HorizAsyntB
+
+        Omega_phi0 = eft_par_cache%omegav
         a2 = a*a
+
         Omega_tot = ( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-3) + ( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-4) +eft_cache%grhonu_tot/(3._dl*eft_par_cache%h0_Mpc**2*a2)
-        temp = 0.5_dl*a2*(eft_par_cache%h0_Mpc)**2*( Omega_tot + sqrt( Omega_tot**2 +4._dl*eft_par_cache%omegav ) )
-        eft_cache%adotoa = sqrt( temp )
+
+		    limit1=0
+		    if (limit1.lt.0) limit1=0
+		      limit2=10**(9)
+		      flimit1=Omega_phi0+Omega_tot*(limit1/a)**(self%s)-(limit1/a)**(2+self%s)
+		      flimit2=Omega_phi0+Omega_tot*(limit2/a)**(self%s)-(limit2/a)**(2+self%s)
+		      dmean=(limit2-limit1)/2
+		      solution=limit2-dmean
+		      fsolution=1
+		      counter=0
+		      do while(sqrt(fsolution**2).gt.10**(-1).and.counter.lt.50**1)
+			         fsolution=Omega_phi0+Omega_tot*(solution/a)**(self%s)-(solution/a)**(2+self%s)
+			         bolean=fsolution*flimit1
+			         if (bolean.gt.0.) then
+				           limit1=solution
+				           flimit1=fsolution
+			         endif
+			         if (bolean.le.0.) then
+				           limit2=solution
+				           flimit2=fsolution
+			         endif
+			         dmean=(limit2-limit1)/2
+			         solution=limit1+dmean
+			         counter=counter+1
+         enddo
+
+		  temp= solution*eft_par_cache%h0_Mpc
+      eft_cache%adotoa = temp
 
     end subroutine EFTCAMBWBGalileonComputeAdotoa
 
