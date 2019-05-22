@@ -241,6 +241,8 @@ contains
          implicit none
 
          type(EFTCAMB_parameter_cache), intent(in):: eft_par_cache  !< a EFTCAMB parameter cache containing cosmological parameters.
+       !  type(EFTCAMB_timestep_cache ), intent(inout) :: eft_cache     !< the EFTCAMB timestep cache that contains all the physical values.      ! @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @       
+        ! type(EFTCAMB_parameter_cache), intent(inout) :: eft_par_cache !< the EFTCAMB parameter cache that contains all the physical parameters.    ! @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @   @ 
          integer , intent(in)                     :: ind    !< index of the EFT functions interpolation tables to fill.
          real(dl), intent(in)                     :: x      !< time at which the derivatives of the system are computed.
 
@@ -264,7 +266,11 @@ contains
          real(dl) :: Chi, ChiP, ChiPP, ChiPPP
 
          real(dl) :: s, p, XDS, c2, c3, c4, c5, Hds
+         real(dl) :: temp
+         integer  :: counter
+	     real(dl) :: limit1, limit2, flimit1, flimit2, dmean, solution, fsolution, bolean   !solution=H/H0
 
+	     real(dl) :: ATemp1, ATemp2, BTemp1, BTemp2, HorizAsyntB
          a = Exp(x)
          a2 = a*a
          m0 = 1._dl
@@ -299,11 +305,54 @@ contains
          end if
 
          Omega_tot = ( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-3.) + ( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-4) +rhonu_tot/(3._dl*eft_par_cache%h0_Mpc**2*a2)
-         adotoa = sqrt( 0.5_dl*a2*(eft_par_cache%h0_Mpc)**2*( Omega_tot + sqrt( Omega_tot**2 +4._dl*eft_par_cache%omegav ) ) )
+
+
+         !call self%compute_adotoa( a, eft_par_cache, eft_cache )
+
+         !adotoa = sqrt( 0.5_dl*a2*(eft_par_cache%h0_Mpc)**2*( Omega_tot + sqrt( Omega_tot**2 +4._dl*eft_par_cache%omegav ) ) )!@  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  
+
+        !new code -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+        Omega_phi0 = eft_par_cache%omegav
+
+		    limit1=0
+		    if (limit1.lt.0) limit1=0
+		      limit2=10**(9)
+		      flimit1=Omega_phi0+Omega_tot*(limit1/a)**(self%s)-(limit1/a)**(2+self%s)
+		      flimit2=Omega_phi0+Omega_tot*(limit2/a)**(self%s)-(limit2/a)**(2+self%s)
+		      dmean=(limit2-limit1)/2
+		      solution=limit2-dmean
+		      fsolution=1
+		      counter=0
+		      do while(sqrt(fsolution**2).gt.10**(-1).and.counter.lt.50**1)
+			         fsolution=Omega_phi0+Omega_tot*(solution/a)**(self%s)-(solution/a)**(2+self%s)
+			         bolean=fsolution*flimit1
+			         if (bolean.gt.0.) then
+				           limit1=solution
+				           flimit1=fsolution
+			         endif
+			         if (bolean.le.0.) then
+				           limit2=solution
+				           flimit2=fsolution
+			         endif
+			         dmean=(limit2-limit1)/2
+			         solution=limit1+dmean
+			         counter=counter+1
+         enddo
+
+		  adotoa= solution*eft_par_cache%h0_Mpc
+
+        !new code -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
          Omega_phi0 = eft_par_cache%omegav
          Omega_tot_prime = -3._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-4) -4._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-5) &
                                   & -(rhonu_tot+presnu_tot)/(eft_par_cache%h0_Mpc**2*a2*a)
-         Hdot = adotoa**2. +0.25_dl*(eft_par_cache%h0_Mpc)**2.*a**3.*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime
+         !Hdot = adotoa**2. +0.25_dl*(eft_par_cache%h0_Mpc)**2.*a**3.*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime !original
+        
+
+         Hdot = (adotoa**2*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s + 2*Omega_tot + a*Omega_tot_prime))/(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s + 2*Omega_tot)!@  @  @  @  @  @  @  @  @  @  @  @  
 
 
 
@@ -335,11 +384,11 @@ contains
          Omega_tot_primeprime = 12._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-5) +20._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-6)&
                                   & +(4._dl*(rhonu_tot+presnu_tot)-presnudot_tot/adotoa )/(eft_par_cache%h0_Mpc**2*a2**2)
 
-         Hdotdot = 2._dl*adotoa*Hdot +3._dl*adotoa*( Hdot -adotoa**2 ) +0.25_dl*(eft_par_cache%h0_Mpc)**2*adotoa*a2**2&
-                       & *( ( 1._dl +Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_primeprime +Omega_tot_prime**2&
-                       & *( 4._dl*Omega_phi0/( Omega_tot**2 +4._dl*Omega_phi0 )**( 1.5_dl ) ) )
-
-
+        ! Hdotdot = 2._dl*adotoa*Hdot +3._dl*adotoa*( Hdot -adotoa**2 ) +0.25_dl*(eft_par_cache%h0_Mpc)**2*adotoa*a2**2&
+                 !      & *( ( 1._dl +Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_primeprime +Omega_tot_prime**2&
+                  !     & *( 4._dl*Omega_phi0/( Omega_tot**2 +4._dl*Omega_phi0 )**( 1.5_dl ) ) )  !original
+        Hdotdot =          adotoa**3*(2 + (a*(5*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s + 2*Omega_tot)**2*Omega_tot_prime + a*Omega_phi0*s*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_tot_prime**2 + &
+     &         a*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s + 2*Omega_tot)**2*Omega_tot_primeprime))/(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s + 2*Omega_tot)**3)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
          rhonu_tot  = 0._dl
          presnu_tot = 0._dl
          presnudot_tot = 0._dl
@@ -371,31 +420,56 @@ contains
         Omega_tot_primeprimeprime = -60._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-6) -120._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-7)&
                     & +(-20._dl*(rhonu_tot+presnu_tot) + (6._dl/adotoa +Hdot/adotoa**3)*presnudot_tot  -1._dl/adotoa**2*presnudotdot_tot)/(eft_par_cache%h0_Mpc**2*a**5)
 
-        Hddd = 9._dl*adotoa*Hdotdot -26._dl*adotoa**2*Hdot +Hdot*Hdotdot/adotoa &
-                    &+12._dl*adotoa**4 +0.25_dl*(eft_par_cache%h0_Mpc*adotoa)**2*a**5*( Omega_tot_primeprimeprime&
-                    & +(Omega_tot*Omega_tot_primeprimeprime +Omega_tot_primeprime*Omega_tot_prime)/(Omega_tot**2 +4._dl*Omega_phi0)**(0.5) +( 8._dl*Omega_tot_prime*Omega_tot_primeprime*Omega_phi0 &
-                    &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprime )/(Omega_tot**2 +4._dl*Omega_phi0)**(1.5) -12._dl*Omega_phi0*Omega_tot*Omega_tot_prime**3/( Omega_tot**2 +4._dl*Omega_phi0 )**(2.5) )
+       ! Hddd = 9._dl*adotoa*Hdotdot -26._dl*adotoa**2*Hdot +Hdot*Hdotdot/adotoa &
+        !            &+12._dl*adotoa**4 +0.25_dl*(eft_par_cache%h0_Mpc*adotoa)**2*a**5*( Omega_tot_primeprimeprime&
+         !           & +(Omega_tot*Omega_tot_primeprimeprime +Omega_tot_primeprime*Omega_tot_prime)/(Omega_tot**2 +4._dl*Omega_phi0)**(0.5) +( 8._dl*Omega_tot_prime*Omega_tot_primeprime*Omega_phi0 &
+          !          &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprime )/(Omega_tot**2 +4._dl*Omega_phi0)**(1.5) -12._dl*Omega_phi0*Omega_tot*Omega_tot_prime**3/( Omega_tot**2 +4._dl*Omega_phi0 )**(2.5) )
 
         Omega_tot_primeprimeprimeprime = 360._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-7) +840._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-8)&
                     & +(120._dl*(rhonu_tot+presnu_tot) + (-38._dl/adotoa -9._dl*Hdot/adotoa**3 +Hdotdot/adotoa**4 &
                     & -3._dl*Hdot**2/adotoa**5 )*presnudot_tot +presnudotdot_tot*( 9._dl/adotoa**2 +3._dl*Hdot/adotoa**4 )&
                     & -presnudotdotdot_tot/adotoa**3)/(eft_par_cache%h0_Mpc**2*a**6)
 
-        Hdddd = 14._dl*adotoa*Hddd -71._dl*adotoa**2*Hdotdot +Hdotdot**2/adotoa +3._dl*Hdot*Hddd/adotoa&
-                    &+154._dl*adotoa**3*Hdot -14._dl*Hdot*Hdotdot -3._dl*Hdot**2*Hdotdot/adotoa**2 -60._dl*adotoa**5 &
-                    &+(eft_par_cache%h0_Mpc**2*adotoa**3*a**6)/(4._dl)*(Omega_tot_primeprimeprimeprime + (Omega_tot_prime*Omega_tot_primeprimeprime +Omega_tot*Omega_tot_primeprimeprimeprime &
-                    &+ Omega_tot_primeprimeprime*Omega_tot_prime+(Omega_tot_primeprime)**2)/((Omega_tot**2 +4._dl*Omega_phi0)**(0.5)) -((Omega_tot_primeprimeprime*Omega_tot&
-                    &+ Omega_tot_primeprime*Omega_tot_prime)*Omega_tot_prime*Omega_tot)/((Omega_tot**2 +4._dl*Omega_phi0)**(1.5)) +(8._dl*Omega_phi0*(Omega_tot_primeprime)**2 &
-                    &+8._dl*Omega_phi0*Omega_tot_prime*Omega_tot_primeprimeprime -2._dl*Omega_tot*Omega_tot_prime**2*Omega_tot_primeprime -Omega_tot**2*( Omega_tot_primeprime)**2 &
-                    &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprimeprime)/((Omega_tot**2 +  4._dl*Omega_phi0)**(1.5))-3._dl*Omega_tot*Omega_tot_prime*(8._dl*Omega_phi0*Omega_tot_prime*Omega_tot_primeprime &
-                    &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprime)/((Omega_tot**2 +  4._dl*Omega_phi0)**(2.5))-12._dl*Omega_phi0*((Omega_tot_prime)**4+3._dl*Omega_tot*(Omega_tot_prime)**2*Omega_tot_primeprime)/&
-                    &((Omega_tot**2 +  4._dl*Omega_phi0)**(2.5)) +60._dl*Omega_phi0*(Omega_tot**2*(Omega_tot_prime)**4)/((Omega_tot**2 +4._dl*Omega_phi0)**(3.5)))
+        !Hdddd = 14._dl*adotoa*Hddd -71._dl*adotoa**2*Hdotdot +Hdotdot**2/adotoa +3._dl*Hdot*Hddd/adotoa&
+         !           &+154._dl*adotoa**3*Hdot -14._dl*Hdot*Hdotdot -3._dl*Hdot**2*Hdotdot/adotoa**2 -60._dl*adotoa**5 &
+          !          &+(eft_par_cache%h0_Mpc**2*adotoa**3*a**6)/(4._dl)*(Omega_tot_primeprimeprimeprime + (Omega_tot_prime*Omega_tot_primeprimeprime +Omega_tot*Omega_tot_primeprimeprimeprime &
+           !         &+ Omega_tot_primeprimeprime*Omega_tot_prime+(Omega_tot_primeprime)**2)/((Omega_tot**2 +4._dl*Omega_phi0)**(0.5)) -((Omega_tot_primeprimeprime*Omega_tot&
+            !        &+ Omega_tot_primeprime*Omega_tot_prime)*Omega_tot_prime*Omega_tot)/((Omega_tot**2 +4._dl*Omega_phi0)**(1.5)) +(8._dl*Omega_phi0*(Omega_tot_primeprime)**2 &
+             !       &+8._dl*Omega_phi0*Omega_tot_prime*Omega_tot_primeprimeprime -2._dl*Omega_tot*Omega_tot_prime**2*Omega_tot_primeprime -Omega_tot**2*( Omega_tot_primeprime)**2 &
+              !      &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprimeprime)/((Omega_tot**2 +  4._dl*Omega_phi0)**(1.5))-3._dl*Omega_tot*Omega_tot_prime*(8._dl*Omega_phi0*Omega_tot_prime*Omega_tot_primeprime &
+               !     &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprime)/((Omega_tot**2 +  4._dl*Omega_phi0)**(2.5))-12._dl*Omega_phi0*((Omega_tot_prime)**4+3._dl*Omega_tot*(Omega_tot_prime)**2*Omega_tot_primeprime)/&
+                !    &((Omega_tot**2 +  4._dl*Omega_phi0)**(2.5)) +60._dl*Omega_phi0*(Omega_tot**2*(Omega_tot_prime)**4)/((Omega_tot**2 +4._dl*Omega_phi0)**(3.5)))
 
          adotoaPrime = Hdot/(a*adotoa)
          adotoaPrimePrime = (-Hdot**2. + Hdotdot*adotoa - Hdot*adotoa**2.)/(a**2.*adotoa**3.)
-         adotoaPrimePrimePrime = (3._dl*Hdot**3. - 4._dl*Hdot*Hdotdot*adotoa + 3._dl*Hdot**2.*adotoa**2. + Hddd*adotoa**2. - 3._dl*Hdotdot*adotoa**3. + 2._dl*Hdot*adotoa**4.)/(a**3.*adotoa**5.)
-         adotoaPrimePrimePrimePrime =   (-15._dl*Hdot**4. + 25._dl*Hdot**2.*Hdotdot*adotoa - 18._dl*Hdot**3.*adotoa**2. - 4._dl*Hdotdot**2.*adotoa**2. - 7._dl*Hdot*Hddd*adotoa**2. + 24._dl*Hdot*Hdotdot*adotoa**3. + Hdddd*adotoa**3. &
-             & - 11._dl*Hdot**2.*adotoa**4. - 6._dl*Hddd*adotoa**4. + 11._dl*Hdotdot*adotoa**5. - 6._dl*Hdot*adotoa**6.)/(a**4.*adotoa**7.)
+        ! adotoaPrimePrimePrime = (3._dl*Hdot**3. - 4._dl*Hdot*Hdotdot*adotoa + 3._dl*Hdot**2.*adotoa**2. + Hddd*adotoa**2. - 3._dl*Hdotdot*adotoa**3. + 2._dl*Hdot*adotoa**4.)/(a**3.*adotoa**5.)
+         !adotoaPrimePrimePrimePrime =   (-15._dl*Hdot**4. + 25._dl*Hdot**2.*Hdotdot*adotoa - 18._dl*Hdot**3.*adotoa**2. - 4._dl*Hdotdot**2.*adotoa**2. - 7._dl*Hdot*Hddd*adotoa**2. + 24._dl*Hdot*Hdotdot*adotoa**3. + Hdddd*adotoa**3. &
+          !   & - 11._dl*Hdot**2.*adotoa**4. - 6._dl*Hddd*adotoa**4. + 11._dl*Hdotdot*adotoa**5. - 6._dl*Hdot*adotoa**6.)/(a**4.*adotoa**7.)
+
+        adotoaPrimePrimePrime= (-(a**3*(Omega_phi0*(24 + 26*s + 9*s**2 + s**3)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 24*Omega_tot)*adotoaPrime**3) + &
+     &    3*a**2*adotoa*adotoaPrime*(adotoaPrime*(Omega_phi0*(2 + s)**2*(3 + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*Omega_tot + 6*a*Omega_tot_prime) + &
+     &       a*(Omega_phi0*(6 + 5*s + s**2)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6*Omega_tot)*adotoaPrimePrime) - &
+     &    3*a*adotoa**2*(a*(Omega_phi0*(2 + s)**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4*Omega_tot + 2*a*Omega_tot_prime)*adotoaPrimePrime + &
+     &       adotoaPrime*(4*Omega_phi0*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 5*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4*Omega_tot + &
+     &          8*a*Omega_tot_prime + 2*a**2*Omega_tot_primeprime)) + &
+     &    adotoa**3*(2*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 3*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6*a*Omega_tot_prime + 6*a**2*Omega_tot_primeprime + &
+     &       a**3*Omega_tot_primeprimeprime))/(a**3*adotoa**2*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 2*Omega_tot))
+
+        adotoaPrimePrimePrimePrime =(a**4*(Omega_phi0*(120 + 154*s + 71*s**2 + 14*s**3 + s**4)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 120*Omega_tot)*adotoaPrime**4 - &
+     &    2*a**3*adotoa*adotoaPrime**2*(2*adotoaPrime*(Omega_phi0*(2 + s)**2*(12 + 7*s + s**2)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 48*Omega_tot + 24*a*Omega_tot_prime) + &
+     &       3*a*(Omega_phi0*(24 + 26*s + 9*s**2 + s**3)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 24*Omega_tot)*adotoaPrimePrime) + &
+     &    a**2*adotoa**2*(3*a**2*(Omega_phi0*(6 + 5*s + s**2)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6*Omega_tot)*adotoaPrimePrime**2 + &
+     &       6*adotoaPrime**2*(12*Omega_phi0*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 28*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 23*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8*Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + &
+     &          Omega_phi0*s**4*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*Omega_tot + 24*a*Omega_tot_prime + 6*a**2*Omega_tot_primeprime) + &
+     &       4*a*adotoaPrime*(3*(Omega_phi0*(2 + s)**2*(3 + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*Omega_tot + 6*a*Omega_tot_prime)*adotoaPrimePrime + &
+     &          a*(Omega_phi0*(6 + 5*s + s**2)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6*Omega_tot)*adotoaPrimePrimePrime)) - &
+     &    2*a*adotoa**3*(a*(3*adotoaPrimePrime*(4*Omega_phi0*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 5*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4*Omega_tot + &
+     &             8*a*Omega_tot_prime + 2*a**2*Omega_tot_primeprime) + 2*a*(Omega_phi0*(2 + s)**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4*Omega_tot + 2*a*Omega_tot_prime)*adotoaPrimePrimePrime) + &
+     &       2*adotoaPrime*(4*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 5*Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**4*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*a*Omega_tot_prime + &
+     &          12*a**2*Omega_tot_primeprime + 2*a**3*Omega_tot_primeprimeprime)) + &
+     &    adotoa**4*(-2*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s - Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 2*Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**4*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*a**2*Omega_tot_primeprime + &
+     &       8*a**3*Omega_tot_primeprimeprime + a**4*Omega_tot_primeprimeprimeprime))/(a**4*adotoa**3*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 2*Omega_tot))
+
 
           ! write(31, *) a, adotoa/eft_par_cache%h0_Mpc, adotoaPrime/eft_par_cache%h0_Mpc, adotoaPrimePrime/eft_par_cache%h0_Mpc, adotoaPrimePrimePrime/eft_par_cache%h0_Mpc, adotoaPrimePrimePrimePrime/eft_par_cache%h0_Mpc
 
@@ -1003,10 +1077,10 @@ contains
         type(EFTCAMB_parameter_cache), intent(inout) :: eft_par_cache !< the EFTCAMB parameter cache that contains all the physical parameters.
         type(EFTCAMB_timestep_cache ), intent(inout) :: eft_cache     !< the EFTCAMB timestep cache that contains all the physical values.
 
-        real(dl) :: temp, a2, Omega_tot, Omega_tot_prime, Omega_tot_primeprime,Omega_tot_primeprimeprime, Omega_phi0, Omega_tot_primeprimeprimeprime
+        real(dl) :: temp, a2, Omega_tot, Omega_tot_prime, Omega_tot_primeprime,Omega_tot_primeprimeprime, Omega_phi0, Omega_tot_primeprimeprimeprime, s
 
         a2 = a*a
-
+        s = self%s!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         if(a*eft_cache%adotoa==0._dl) return
 
         Omega_tot = ( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-3) + ( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-4) +eft_cache%grhonu_tot/(3._dl*eft_par_cache%h0_Mpc**2*a2)
@@ -1015,11 +1089,16 @@ contains
         Omega_tot_primeprime = 12._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-5) +20._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-6)&
                           & +(4._dl*(eft_cache%grhonu_tot+eft_cache%gpinu_tot)-eft_cache%gpinudot_tot/eft_cache%adotoa )/(eft_par_cache%h0_Mpc**2*a2**2)
         Omega_phi0 = eft_par_cache%omegav
-        eft_cache%Hdot = eft_cache%adotoa**2 +0.25_dl*(eft_par_cache%h0_Mpc)**2*a**3*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime
-        eft_cache%Hdotdot = 2._dl*eft_cache%adotoa*eft_cache%Hdot +3._dl*eft_cache%adotoa*( eft_cache%Hdot -eft_cache%adotoa**2 ) +0.25_dl*(eft_par_cache%h0_Mpc)**2*eft_cache%adotoa*a2**2&
-            & *( ( 1._dl +Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_primeprime +Omega_tot_prime**2&
-            & *( 4._dl*Omega_phi0/( Omega_tot**2 +4._dl*Omega_phi0 )**( 1.5_dl ) ) )
+        !eft_cache%Hdot = eft_cache%adotoa**2 +0.25_dl*(eft_par_cache%h0_Mpc)**2*a**3*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime
+        eft_cache%Hdot  = (eft_cache%adotoa**2*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/eft_cache%adotoa)**s + 2*Omega_tot + a*Omega_tot_prime))/(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/eft_cache%adotoa)**s + 2*Omega_tot)!@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
 
+       ! eft_cache%Hdotdot = 2._dl*eft_cache%adotoa*eft_cache%Hdot +3._dl*eft_cache%adotoa*( eft_cache%Hdot -eft_cache%adotoa**2 ) +0.25_dl*(eft_par_cache%h0_Mpc)**2*eft_cache%adotoa*a2**2&
+          !  & *( ( 1._dl +Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_primeprime +Omega_tot_prime**2&
+           ! & *( 4._dl*Omega_phi0/( Omega_tot**2 +4._dl*Omega_phi0 )**( 1.5_dl ) ) )
+
+        eft_cache%Hdotdot =  eft_cache%adotoa**3*(2 + (a*(5*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/eft_cache%adotoa)**s + 2*Omega_tot)**2*Omega_tot_prime + a*Omega_phi0*s*(2 + s)*((a*eft_par_cache%h0_Mpc)/eft_cache%adotoa)**s*Omega_tot_prime**2 + &
+     &         a*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/eft_cache%adotoa)**s + 2*Omega_tot)**2*Omega_tot_primeprime))/(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/eft_cache%adotoa)**s + 2*Omega_tot)**3)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        
 
     end subroutine EFTCAMBWBGalileonComputeHubbleDer
 
