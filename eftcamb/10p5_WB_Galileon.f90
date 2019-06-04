@@ -258,8 +258,9 @@ contains
          real(dl) :: rhonu_tot, presnu_tot, presnudot_tot, presnudotdot_tot,presnudotdotdot_tot,Omega_phi0
          real(dl) :: rhonu, presnu, grhormass_t,presnudotdotdot,presnudotdot,presnudot
          real(dl) :: adotoa, Hdot,Hdotdot,Hddd, Hdddd
+         real(dl) :: OLDadotoa, OLDHdot,OLDHdotdot,OLDHddd, OLDHdddd
 
-         real(dl) :: adotoaPrime, adotoaPrimePrime, adotoaPrimePrimePrime, adotoaPrimePrimePrimePrime
+         real(dl) :: adotoaPrime, adotoaPrimePrime, adotoaPrimePrimePrime, adotoaPrimePrimePrimePrime,OLDadotoaPrime, OLDadotoaPrimePrime, OLDadotoaPrimePrimePrime, OLDadotoaPrimePrimePrimePrime
          real(dl) :: Phi, PhiPrime, PhiPrimePrime, PhiPrimePrimePrime, PhiPrimePrimePrimePrime, m0
          integer  :: nu_i
 
@@ -309,9 +310,9 @@ contains
 
          !call self%compute_adotoa( a, eft_par_cache, eft_cache )
 
-         !adotoa = sqrt( 0.5_dl*a2*(eft_par_cache%h0_Mpc)**2*( Omega_tot + sqrt( Omega_tot**2 +4._dl*eft_par_cache%omegav ) ) )!@  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  
+         OLDadotoa = sqrt( 0.5_dl*a2*(eft_par_cache%h0_Mpc)**2*( Omega_tot + sqrt( Omega_tot**2 +4._dl*eft_par_cache%omegav ) ) )!@  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  @  
 
-        !new code -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+        !start new code -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
         Omega_phi0 = eft_par_cache%omegav
@@ -343,13 +344,14 @@ contains
 
 		  adotoa= solution*eft_par_cache%h0_Mpc
 
-        !new code -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+        !end new code -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
          Omega_phi0 = eft_par_cache%omegav
          Omega_tot_prime = -3._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-4) -4._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-5) &
                                   & -(rhonu_tot+presnu_tot)/(eft_par_cache%h0_Mpc**2*a2*a)
-         !Hdot = adotoa**2. +0.25_dl*(eft_par_cache%h0_Mpc)**2.*a**3.*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime !original
+         
+        OLDHdot = OLDadotoa**2. +0.25_dl*(eft_par_cache%h0_Mpc)**2.*a**3.*( 1._dl + Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_prime !original
         
 
          Hdot = (adotoa**2*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s + 2*Omega_tot + a*Omega_tot_prime))/(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s + 2*Omega_tot)!@  @  @  @  @  @  @  @  @  @  @  @  
@@ -384,9 +386,10 @@ contains
          Omega_tot_primeprime = 12._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-5) +20._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-6)&
                                   & +(4._dl*(rhonu_tot+presnu_tot)-presnudot_tot/adotoa )/(eft_par_cache%h0_Mpc**2*a2**2)
 
-        ! Hdotdot = 2._dl*adotoa*Hdot +3._dl*adotoa*( Hdot -adotoa**2 ) +0.25_dl*(eft_par_cache%h0_Mpc)**2*adotoa*a2**2&
-                 !      & *( ( 1._dl +Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_primeprime +Omega_tot_prime**2&
-                  !     & *( 4._dl*Omega_phi0/( Omega_tot**2 +4._dl*Omega_phi0 )**( 1.5_dl ) ) )  !original
+        OLDHdotdot = 2._dl*OLDadotoa*OLDHdot +3._dl*OLDadotoa*( OLDHdot -OLDadotoa**2 ) +0.25_dl*(eft_par_cache%h0_Mpc)**2*OLDadotoa*a2**2&
+                       & *( ( 1._dl +Omega_tot/sqrt( Omega_tot**2 +4._dl*Omega_phi0 ) )*Omega_tot_primeprime +Omega_tot_prime**2&
+                       & *( 4._dl*Omega_phi0/( Omega_tot**2 +4._dl*Omega_phi0 )**( 1.5_dl ) ) )  !original
+
         Hdotdot =          adotoa**3*(2 + (a*(5*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s + 2*Omega_tot)**2*Omega_tot_prime + a*Omega_phi0*s*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_tot_prime**2 + &
      &         a*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s + 2*Omega_tot)**2*Omega_tot_primeprime))/(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc)/adotoa)**s + 2*Omega_tot)**3)!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
          rhonu_tot  = 0._dl
@@ -420,59 +423,206 @@ contains
         Omega_tot_primeprimeprime = -60._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-6) -120._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-7)&
                     & +(-20._dl*(rhonu_tot+presnu_tot) + (6._dl/adotoa +Hdot/adotoa**3)*presnudot_tot  -1._dl/adotoa**2*presnudotdot_tot)/(eft_par_cache%h0_Mpc**2*a**5)
 
-       ! Hddd = 9._dl*adotoa*Hdotdot -26._dl*adotoa**2*Hdot +Hdot*Hdotdot/adotoa &
-        !            &+12._dl*adotoa**4 +0.25_dl*(eft_par_cache%h0_Mpc*adotoa)**2*a**5*( Omega_tot_primeprimeprime&
-         !           & +(Omega_tot*Omega_tot_primeprimeprime +Omega_tot_primeprime*Omega_tot_prime)/(Omega_tot**2 +4._dl*Omega_phi0)**(0.5) +( 8._dl*Omega_tot_prime*Omega_tot_primeprime*Omega_phi0 &
-          !          &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprime )/(Omega_tot**2 +4._dl*Omega_phi0)**(1.5) -12._dl*Omega_phi0*Omega_tot*Omega_tot_prime**3/( Omega_tot**2 +4._dl*Omega_phi0 )**(2.5) )
+        OLDHddd = 9._dl*OLDadotoa*OLDHdotdot -26._dl*OLDadotoa**2*OLDHdot +OLDHdot*OLDHdotdot/OLDadotoa &
+                    &+12._dl*OLDadotoa**4 +0.25_dl*(eft_par_cache%h0_Mpc*OLDadotoa)**2*a**5*( Omega_tot_primeprimeprime&
+                    & +(Omega_tot*Omega_tot_primeprimeprime +Omega_tot_primeprime*Omega_tot_prime)/(Omega_tot**2 +4._dl*Omega_phi0)**(0.5) +( 8._dl*Omega_tot_prime*Omega_tot_primeprime*Omega_phi0 &
+                    &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprime )/(Omega_tot**2 +4._dl*Omega_phi0)**(1.5) -12._dl*Omega_phi0*Omega_tot*Omega_tot_prime**3/( Omega_tot**2 +4._dl*Omega_phi0 )**(2.5) )
 
         Omega_tot_primeprimeprimeprime = 360._dl*( eft_par_cache%omegac +eft_par_cache%omegab )*a**(-7) +840._dl*( eft_par_cache%omegag +eft_par_cache%omegar)*a**(-8)&
                     & +(120._dl*(rhonu_tot+presnu_tot) + (-38._dl/adotoa -9._dl*Hdot/adotoa**3 +Hdotdot/adotoa**4 &
                     & -3._dl*Hdot**2/adotoa**5 )*presnudot_tot +presnudotdot_tot*( 9._dl/adotoa**2 +3._dl*Hdot/adotoa**4 )&
                     & -presnudotdotdot_tot/adotoa**3)/(eft_par_cache%h0_Mpc**2*a**6)
 
-        !Hdddd = 14._dl*adotoa*Hddd -71._dl*adotoa**2*Hdotdot +Hdotdot**2/adotoa +3._dl*Hdot*Hddd/adotoa&
-         !           &+154._dl*adotoa**3*Hdot -14._dl*Hdot*Hdotdot -3._dl*Hdot**2*Hdotdot/adotoa**2 -60._dl*adotoa**5 &
-          !          &+(eft_par_cache%h0_Mpc**2*adotoa**3*a**6)/(4._dl)*(Omega_tot_primeprimeprimeprime + (Omega_tot_prime*Omega_tot_primeprimeprime +Omega_tot*Omega_tot_primeprimeprimeprime &
-           !         &+ Omega_tot_primeprimeprime*Omega_tot_prime+(Omega_tot_primeprime)**2)/((Omega_tot**2 +4._dl*Omega_phi0)**(0.5)) -((Omega_tot_primeprimeprime*Omega_tot&
-            !        &+ Omega_tot_primeprime*Omega_tot_prime)*Omega_tot_prime*Omega_tot)/((Omega_tot**2 +4._dl*Omega_phi0)**(1.5)) +(8._dl*Omega_phi0*(Omega_tot_primeprime)**2 &
-             !       &+8._dl*Omega_phi0*Omega_tot_prime*Omega_tot_primeprimeprime -2._dl*Omega_tot*Omega_tot_prime**2*Omega_tot_primeprime -Omega_tot**2*( Omega_tot_primeprime)**2 &
-              !      &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprimeprime)/((Omega_tot**2 +  4._dl*Omega_phi0)**(1.5))-3._dl*Omega_tot*Omega_tot_prime*(8._dl*Omega_phi0*Omega_tot_prime*Omega_tot_primeprime &
-               !     &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprime)/((Omega_tot**2 +  4._dl*Omega_phi0)**(2.5))-12._dl*Omega_phi0*((Omega_tot_prime)**4+3._dl*Omega_tot*(Omega_tot_prime)**2*Omega_tot_primeprime)/&
-                !    &((Omega_tot**2 +  4._dl*Omega_phi0)**(2.5)) +60._dl*Omega_phi0*(Omega_tot**2*(Omega_tot_prime)**4)/((Omega_tot**2 +4._dl*Omega_phi0)**(3.5)))
+        OLDHdddd = 14._dl*OLDadotoa*OLDHddd -71._dl*OLDadotoa**2*OLDHdotdot +OLDHdotdot**2/OLDadotoa +3._dl*OLDHdot*OLDHddd/OLDadotoa&
+                    &+154._dl*OLDadotoa**3*OLDHdot -14._dl*OLDHdot*OLDHdotdot -3._dl*OLDHdot**2*OLDHdotdot/OLDadotoa**2 -60._dl*OLDadotoa**5 &
+                    &+(eft_par_cache%h0_Mpc**2*OLDadotoa**3*a**6)/(4._dl)*(Omega_tot_primeprimeprimeprime + (Omega_tot_prime*Omega_tot_primeprimeprime +Omega_tot*Omega_tot_primeprimeprimeprime &
+                    &+ Omega_tot_primeprimeprime*Omega_tot_prime+(Omega_tot_primeprime)**2)/((Omega_tot**2 +4._dl*Omega_phi0)**(0.5)) -((Omega_tot_primeprimeprime*Omega_tot&
+                    &+ Omega_tot_primeprime*Omega_tot_prime)*Omega_tot_prime*Omega_tot)/((Omega_tot**2 +4._dl*Omega_phi0)**(1.5)) +(8._dl*Omega_phi0*(Omega_tot_primeprime)**2 &
+                    &+8._dl*Omega_phi0*Omega_tot_prime*Omega_tot_primeprimeprime -2._dl*Omega_tot*Omega_tot_prime**2*Omega_tot_primeprime -Omega_tot**2*( Omega_tot_primeprime)**2 &
+                    &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprimeprime)/((Omega_tot**2 +  4._dl*Omega_phi0)**(1.5))-3._dl*Omega_tot*Omega_tot_prime*(8._dl*Omega_phi0*Omega_tot_prime*Omega_tot_primeprime &
+                    &-Omega_tot**2*Omega_tot_prime*Omega_tot_primeprime)/((Omega_tot**2 +  4._dl*Omega_phi0)**(2.5))-12._dl*Omega_phi0*((Omega_tot_prime)**4+3._dl*Omega_tot*(Omega_tot_prime)**2*Omega_tot_primeprime)/&
+                    &((Omega_tot**2 +  4._dl*Omega_phi0)**(2.5)) +60._dl*Omega_phi0*(Omega_tot**2*(Omega_tot_prime)**4)/((Omega_tot**2 +4._dl*Omega_phi0)**(3.5)))
 
+      !  Hddd = (adotoaPrimePrimePrime*a**3*adotoa**5 - 2*adotoa**4*Hdot - 3*adotoa**2*Hdot**2 - 3*Hdot**3 + 3*adotoa**3*Hdotdot + 4*adotoa*Hdot*Hdotdot)/adotoa**2
+
+          Hddd =   (adotoa**4*(192*Omega_tot**5 + 16*Omega_tot**4*(60*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0 + 30*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s + 26*a*Omega_tot_prime + 10*a**2*Omega_tot_primeprime + &
+     &         a**3*Omega_tot_primeprimeprime) + ((a*eft_par_cache%h0_Mpc)/adotoa)**(2*s)*Omega_phi0**2*(2 + s)**2*&
+     &       (5*a**2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + 5*s + 2*s**2)*Omega_tot_prime**2 + a**3*s*(-3 + 2*s)*Omega_tot_prime**3 + &
+     &         a*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot_prime*(26*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*(1 + 3*s)*Omega_tot_primeprime) + &
+     &         ((a*eft_par_cache%h0_Mpc)/adotoa)**(2*s)*Omega_phi0**2*(2 + s)**2*(6*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 10*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime)) + &
+     &      4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot**2*(5*a**2*(3 + 2*s)*Omega_tot_prime**2 + &
+     &         3*a*Omega_tot_prime*(52*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*(1 + s)*Omega_tot_primeprime) + &
+     &         6*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(10*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 10*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime)) + &
+     &      8*Omega_tot**3*(5*a**2*Omega_tot_prime**2 + a*Omega_tot_prime*(104*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*Omega_tot_primeprime) + &
+     &         4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(15*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 10*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime)) + &
+     &      2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot*(5*a**2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(6 + 11*s + 4*s**2)*Omega_tot_prime**2 - a**3*s*(3 + s)*Omega_tot_prime**3 + &
+     &         a*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot_prime*(104*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 3*a**2*(1 + 2*s)*Omega_tot_primeprime) + &
+     &         2*((a*eft_par_cache%h0_Mpc)/adotoa)**(2*s)*Omega_phi0**2*(2 + s)**2*(15*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 20*a**2*Omega_tot_primeprime + 2*a**3*Omega_tot_primeprimeprime))))/&
+     &  (((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**5
+
+
+    !    Hdddd =     (adotoaPrimePrimePrimePrime*a**4*adotoa**7 + 6*adotoa**6*Hdot + 11*adotoa**4*Hdot**2 + 18*adotoa**2*Hdot**3 + 15*Hdot**4 - 11*adotoa**5*Hdotdot -&
+     !               & 24*adotoa**3*Hdot*Hdotdot - 25*adotoa*Hdot**2*Hdotdot + 4*adotoa**2*Hdotdot**2 + 6*adotoa**4*Hddd + 7*adotoa**2*Hdot*Hddd)/adotoa**3
+         Hdddd = (adotoa**6*(6*adotoa**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**6*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime) + &
+     &      11*adotoa**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**5*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)**2 + &
+     &      18*adotoa**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**4*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)**3 + &
+     &      15*adotoa**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**3*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)**4 - &
+     &      11*adotoa**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**4*(16*Omega_tot**3 + &
+     &         4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot*(3*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 5*a*Omega_tot_prime + a**2*Omega_tot_primeprime) + &
+     &         4*Omega_tot**2*(6*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 5*a*Omega_tot_prime + a**2*Omega_tot_primeprime) + &
+     &         ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(5*a*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot_prime + a**2*s*Omega_tot_prime**2 + &
+     &            ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*Omega_tot_primeprime))) - &
+     &      24*adotoa**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**3*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)*&
+     &       (16*Omega_tot**3 + 4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot*(3*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 5*a*Omega_tot_prime + a**2*Omega_tot_primeprime) +& 
+     &         4*Omega_tot**2*(6*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 5*a*Omega_tot_prime + a**2*Omega_tot_primeprime) + &
+     &         ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(5*a*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot_prime + a**2*s*Omega_tot_prime**2 + &
+     &            ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*Omega_tot_primeprime))) - &
+     &      25*adotoa**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)**2*&
+     &       (16*Omega_tot**3 + 4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot*(3*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 5*a*Omega_tot_prime + a**2*Omega_tot_primeprime) + &
+     &         4*Omega_tot**2*(6*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 5*a*Omega_tot_prime + a**2*Omega_tot_primeprime) + &
+     &         ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(5*a*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot_prime + a**2*s*Omega_tot_prime**2 + &
+     &            ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*Omega_tot_primeprime))) + &
+     &      4*adotoa**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)*(16*Omega_tot**3 + &
+     &          4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot*(3*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 5*a*Omega_tot_prime + a**2*Omega_tot_primeprime) +& 
+     &          4*Omega_tot**2*(6*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 5*a*Omega_tot_prime + a**2*Omega_tot_primeprime) + & 
+     &          ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(5*a*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot_prime + a**2*s*Omega_tot_prime**2 + & 
+     &             ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*Omega_tot_primeprime)))**2 + & 
+     &      6*adotoa**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*(192*Omega_tot**5 + & 
+     &         16*Omega_tot**4*(60*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0 + 30*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s + 26*a*Omega_tot_prime + 10*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime) + & 
+     &         ((a*eft_par_cache%h0_Mpc)/adotoa)**(2*s)*Omega_phi0**2*(2 + s)**2*(5*a**2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + 5*s + 2*s**2)*Omega_tot_prime**2 + a**3*s*(-3 + 2*s)*Omega_tot_prime**3 + & 
+     &            a*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot_prime*(26*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*(1 + 3*s)*Omega_tot_primeprime) + & 
+     &            ((a*eft_par_cache%h0_Mpc)/adotoa)**(2*s)*Omega_phi0**2*(2 + s)**2*(6*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 10*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime)) + & 
+     &         4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot**2*(5*a**2*(3 + 2*s)*Omega_tot_prime**2 + & 
+     &            3*a*Omega_tot_prime*(52*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*(1 + s)*Omega_tot_primeprime) + & 
+     &            6*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(10*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 10*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime)) + & 
+     &         8*Omega_tot**3*(5*a**2*Omega_tot_prime**2 + a*Omega_tot_prime*(104*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*Omega_tot_primeprime) + & 
+     &            4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(15*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 10*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime)) + & 
+     &         2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot*(5*a**2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(6 + 11*s + 4*s**2)*Omega_tot_prime**2 - a**3*s*(3 + s)*Omega_tot_prime**3 + & 
+     &            a*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot_prime*(104*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 3*a**2*(1 + 2*s)*Omega_tot_primeprime) + & 
+     &            2*((a*eft_par_cache%h0_Mpc)/adotoa)**(2*s)*Omega_phi0**2*(2 + s)**2*(15*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 20*a**2*Omega_tot_primeprime + 2*a**3*Omega_tot_primeprimeprime))) + & 
+     &      7*adotoa**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)*& 
+     &       (192*Omega_tot**5 + 16*Omega_tot**4*(60*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0 + 30*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s + 26*a*Omega_tot_prime + 10*a**2*Omega_tot_primeprime + & 
+     &            a**3*Omega_tot_primeprimeprime) + ((a*eft_par_cache%h0_Mpc)/adotoa)**(2*s)*Omega_phi0**2*(2 + s)**2*& 
+     &          (5*a**2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + 5*s + 2*s**2)*Omega_tot_prime**2 + a**3*s*(-3 + 2*s)*Omega_tot_prime**3 + & 
+     &            a*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot_prime*(26*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*(1 + 3*s)*Omega_tot_primeprime) + & 
+     &            ((a*eft_par_cache%h0_Mpc)/adotoa)**(2*s)*Omega_phi0**2*(2 + s)**2*(6*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 10*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime)) + & 
+     &         4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot**2*(5*a**2*(3 + 2*s)*Omega_tot_prime**2 + & 
+     &            3*a*Omega_tot_prime*(52*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*(1 + s)*Omega_tot_primeprime) + & 
+     &            6*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(10*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 10*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime)) + & 
+     &         8*Omega_tot**3*(5*a**2*Omega_tot_prime**2 + a*Omega_tot_prime*(104*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + a**2*Omega_tot_primeprime) + & 
+     &            4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*(15*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 10*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime)) + & 
+     &         2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot*(5*a**2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(6 + 11*s + 4*s**2)*Omega_tot_prime**2 - a**3*s*(3 + s)*Omega_tot_prime**3 + & 
+     &            a*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)*Omega_tot_prime*(104*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 3*a**2*(1 + 2*s)*Omega_tot_primeprime) + & 
+     &            2*((a*eft_par_cache%h0_Mpc)/adotoa)**(2*s)*Omega_phi0**2*(2 + s)**2*(15*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 20*a**2*Omega_tot_primeprime + 2*a**3*Omega_tot_primeprimeprime))) + & 
+     &      adotoa**2*((((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(120 + 154*s + 71*s**2 + 14*s**3 + s**4) + 120*Omega_tot)*& 
+     &          (((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)**4 + & 
+     &         6*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**4*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)**2*& 
+     &          (12*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0 + 28*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s + 23*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**2 + 8*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**3 + ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**4 + 12*Omega_tot +  & 
+     &            24*a*Omega_tot_prime + 6*a**2*Omega_tot_primeprime) +  & 
+     &         3*a**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(6 + 5*s + s**2) + 6*Omega_tot)*(2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_prime +  & 
+     &             a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(-2 + s + s**2) - 2*Omega_tot)*Omega_tot_prime**2 + a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_primeprime)**2 -  & 
+     &         2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)**2* & 
+     &          (2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)* & 
+     &             (((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)**2*(12 + 7*s + s**2) + 48*Omega_tot + 24*a*Omega_tot_prime) +  & 
+     &            3*a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(24 + 26*s + 9*s**2 + s**3) + 24*Omega_tot)* & 
+     &             (2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_prime + a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(-2 + s + s**2) - 2*Omega_tot)*Omega_tot_prime**2 +  & 
+     &               a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_primeprime)) +  & 
+     &         4*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)* & 
+     &          (3*a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)**2*(3 + s) + 12*Omega_tot + 6*a*Omega_tot_prime)* & 
+     &             (2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_prime + a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(-2 + s + s**2) - 2*Omega_tot)*Omega_tot_prime**2 +  & 
+     &               a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_primeprime) -  & 
+     &            (((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(6 + 5*s + s**2) + 6*Omega_tot)*((((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(24 + 26*s + 9*s**2 + s**3) + 24*Omega_tot)* & 
+     &                (((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)**3 -  & 
+     &               3*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)* & 
+     &                ((((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)* & 
+     &                   (((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)**2*(3 + s) + 12*Omega_tot + 6*a*Omega_tot_prime) +  & 
+     &                  a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(6 + 5*s + s**2) + 6*Omega_tot)* & 
+     &                   (2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_prime + a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(-2 + s + s**2) - 2*Omega_tot)*Omega_tot_prime**2 +  & 
+     &                     a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_primeprime)) +  & 
+     &               3*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)*((((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)* & 
+     &                   (4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0 + 8*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s + 5*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**2 + ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**3 + 4*Omega_tot + 8*a*Omega_tot_prime + &
+     &                     2*a**2*Omega_tot_primeprime) + a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)**2 + 4*Omega_tot + 2*a*Omega_tot_prime)*&
+     &                   (2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_prime + a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(-2 + s + s**2) - 2*Omega_tot)*Omega_tot_prime**2 + &
+     &                     a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_primeprime)) - &
+     &               (((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**4*(2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s + 3*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**2 + ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**3 + 6*a*Omega_tot_prime + &
+     &                  6*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime))) - &
+     &         2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)*(3*a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*&
+     &             (4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0 + 8*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s + 5*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**2 + ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**3 + 4*Omega_tot + 8*a*Omega_tot_prime + &
+     &               2*a**2*Omega_tot_primeprime)*(2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_prime + &
+     &               a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(-2 + s + s**2) - 2*Omega_tot)*Omega_tot_prime**2 + a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_primeprime) + &
+     &            2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**4*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)*&
+     &             (4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s + 8*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**2 + 5*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**3 + ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**4 + 12*a*Omega_tot_prime + &
+     &               12*a**2*Omega_tot_primeprime + 2*a**3*Omega_tot_primeprimeprime) - &
+     &            2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)**2 + 4*Omega_tot + 2*a*Omega_tot_prime)*&
+     &             ((((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(24 + 26*s + 9*s**2 + s**3) + 24*Omega_tot)*&
+     &                (((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)**3 - &
+     &               3*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)*&
+     &                ((((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)*&
+     &                   (((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)**2*(3 + s) + 12*Omega_tot + 6*a*Omega_tot_prime) + &
+     &                  a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(6 + 5*s + s**2) + 6*Omega_tot)*&
+     &                   (2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_prime + a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(-2 + s + s**2) - 2*Omega_tot)*Omega_tot_prime**2 + &
+     &                     a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_primeprime)) + &
+     &               3*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)*((((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot + a*Omega_tot_prime)*&
+     &                   (4*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0 + 8*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s + 5*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**2 + ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**3 + 4*Omega_tot + 8*a*Omega_tot_prime + &
+     &                     2*a**2*Omega_tot_primeprime) + a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s)**2 + 4*Omega_tot + 2*a*Omega_tot_prime)*&
+     &                   (2*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_prime + a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(-2 + s + s**2) - 2*Omega_tot)*Omega_tot_prime**2 + &
+     &                     a*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**2*Omega_tot_primeprime)) - &
+     &               (((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**4*(2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s + 3*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**2 + ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**3 + 6*a*Omega_tot_prime + &
+     &                  6*a**2*Omega_tot_primeprime + a**3*Omega_tot_primeprimeprime))) - &
+     &         (((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**6*(2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s + ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**2 - 2*((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**3 - ((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*s**4 - &
+     &            12*a**2*Omega_tot_primeprime - 8*a**3*Omega_tot_primeprimeprime - a**4*Omega_tot_primeprimeprimeprime))))/(adotoa**3*(((a*eft_par_cache%h0_Mpc)/adotoa)**s*Omega_phi0*(2 + s) + 2*Omega_tot)**7)
          adotoaPrime = Hdot/(a*adotoa)
-         adotoaPrimePrime = (-Hdot**2. + Hdotdot*adotoa - Hdot*adotoa**2.)/(a**2.*adotoa**3.)
-        ! adotoaPrimePrimePrime = (3._dl*Hdot**3. - 4._dl*Hdot*Hdotdot*adotoa + 3._dl*Hdot**2.*adotoa**2. + Hddd*adotoa**2. - 3._dl*Hdotdot*adotoa**3. + 2._dl*Hdot*adotoa**4.)/(a**3.*adotoa**5.)
-         !adotoaPrimePrimePrimePrime =   (-15._dl*Hdot**4. + 25._dl*Hdot**2.*Hdotdot*adotoa - 18._dl*Hdot**3.*adotoa**2. - 4._dl*Hdotdot**2.*adotoa**2. - 7._dl*Hdot*Hddd*adotoa**2. + 24._dl*Hdot*Hdotdot*adotoa**3. + Hdddd*adotoa**3. &
-          !   & - 11._dl*Hdot**2.*adotoa**4. - 6._dl*Hddd*adotoa**4. + 11._dl*Hdotdot*adotoa**5. - 6._dl*Hdot*adotoa**6.)/(a**4.*adotoa**7.)
+         adotoaPrimePrime = (-Hdot**2. + Hdotdot*adotoa - Hdot*adotoa**2.)/(a**2.*adotoa**3.) 
+       !  adotoaPrimePrime = (a**2._dl*(Omega_phi0*(6._dl + 5._dl*s + s**2._dl)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6._dl*Omega_tot)*adotoaPrime**2._dl - &
+     !&    2._dl*a*adotoa*adotoaPrime*(Omega_phi0*(2._dl + s)**2._dl*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4._dl*Omega_tot + 2._dl*a*Omega_tot_prime) + &
+     !&   adotoa**2._dl*(2._dl*Omega_phi0*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 3._dl*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**2._dl*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 2._dl*Omega_tot + 4._dl*a*Omega_tot_prime + a**2._dl*Omega_tot_primeprime))/&
+     !&  (a**2._dl*adotoa*(Omega_phi0*(2._dl + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 2._dl*Omega_tot))
+        
+ !the OLD ones
 
-        adotoaPrimePrimePrime= (-(a**3*(Omega_phi0*(24 + 26*s + 9*s**2 + s**3)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 24*Omega_tot)*adotoaPrime**3) + &
-     &    3*a**2*adotoa*adotoaPrime*(adotoaPrime*(Omega_phi0*(2 + s)**2*(3 + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*Omega_tot + 6*a*Omega_tot_prime) + &
-     &       a*(Omega_phi0*(6 + 5*s + s**2)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6*Omega_tot)*adotoaPrimePrime) - &
-     &    3*a*adotoa**2*(a*(Omega_phi0*(2 + s)**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4*Omega_tot + 2*a*Omega_tot_prime)*adotoaPrimePrime + &
-     &       adotoaPrime*(4*Omega_phi0*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 5*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4*Omega_tot + &
-     &          8*a*Omega_tot_prime + 2*a**2*Omega_tot_primeprime)) + &
-     &    adotoa**3*(2*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 3*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6*a*Omega_tot_prime + 6*a**2*Omega_tot_primeprime + &
-     &       a**3*Omega_tot_primeprimeprime))/(a**3*adotoa**2*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 2*Omega_tot))
+        OLDadotoaPrime = OLDHdot/(a*OLDadotoa)
 
-        adotoaPrimePrimePrimePrime =(a**4*(Omega_phi0*(120 + 154*s + 71*s**2 + 14*s**3 + s**4)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 120*Omega_tot)*adotoaPrime**4 - &
-     &    2*a**3*adotoa*adotoaPrime**2*(2*adotoaPrime*(Omega_phi0*(2 + s)**2*(12 + 7*s + s**2)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 48*Omega_tot + 24*a*Omega_tot_prime) + &
-     &       3*a*(Omega_phi0*(24 + 26*s + 9*s**2 + s**3)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 24*Omega_tot)*adotoaPrimePrime) + &
-     &    a**2*adotoa**2*(3*a**2*(Omega_phi0*(6 + 5*s + s**2)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6*Omega_tot)*adotoaPrimePrime**2 + &
-     &       6*adotoaPrime**2*(12*Omega_phi0*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 28*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 23*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8*Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + &
-     &          Omega_phi0*s**4*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*Omega_tot + 24*a*Omega_tot_prime + 6*a**2*Omega_tot_primeprime) + &
-     &       4*a*adotoaPrime*(3*(Omega_phi0*(2 + s)**2*(3 + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*Omega_tot + 6*a*Omega_tot_prime)*adotoaPrimePrime + &
-     &          a*(Omega_phi0*(6 + 5*s + s**2)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6*Omega_tot)*adotoaPrimePrimePrime)) - &
-     &    2*a*adotoa**3*(a*(3*adotoaPrimePrime*(4*Omega_phi0*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 5*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4*Omega_tot + &
-     &             8*a*Omega_tot_prime + 2*a**2*Omega_tot_primeprime) + 2*a*(Omega_phi0*(2 + s)**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4*Omega_tot + 2*a*Omega_tot_prime)*adotoaPrimePrimePrime) + &
-     &       2*adotoaPrime*(4*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 5*Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**4*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*a*Omega_tot_prime + &
-     &          12*a**2*Omega_tot_primeprime + 2*a**3*Omega_tot_primeprimeprime)) + &
-     &    adotoa**4*(-2*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s - Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 2*Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**4*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*a**2*Omega_tot_primeprime + &
-     &       8*a**3*Omega_tot_primeprimeprime + a**4*Omega_tot_primeprimeprimeprime))/(a**4*adotoa**3*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 2*Omega_tot))
+        OLDadotoaPrimePrime = (-OLDHdot**2. + OLDHdotdot*OLDadotoa - OLDHdot*OLDadotoa**2.)/(a**2.*OLDadotoa**3.)
+
+        OLDadotoaPrimePrimePrime = (3._dl*OLDHdot**3. - 4._dl*OLDHdot*OLDHdotdot*OLDadotoa + 3._dl*OLDHdot**2.*OLDadotoa**2. + Hddd*adotoa**2. - 3._dl*Hdotdot*adotoa**3. + 2._dl*Hdot*adotoa**4.)/(a**3.*adotoa**5.)
+
+        OLDadotoaPrimePrimePrimePrime =   (-15._dl*OLDHdot**4. + 25._dl*OLDHdot**2.*OLDHdotdot*OLDadotoa - 18._dl*OLDHdot**3.*OLDadotoa**2. - 4._dl*OLDHdotdot**2.*OLDadotoa**2. - 7._dl*OLDHdot*OLDHddd*OLDadotoa**2. + 24._dl*OLDHdot*OLDHdotdot*OLDadotoa**3. + OLDHdddd*OLDadotoa**3. &
+             & - 11._dl*OLDHdot**2.*OLDadotoa**4. - 6._dl*OLDHddd*OLDadotoa**4. + 11._dl*OLDHdotdot*OLDadotoa**5. - 6._dl*OLDHdot*OLDadotoa**6.)/(a**4.*OLDadotoa**7.)
+  
+
+     
+        adotoaPrimePrimePrime = (2*adotoa**4*Hdot + 3*Hdot**3 - 3*adotoa**3*Hdotdot - 4*adotoa*Hdot*Hdotdot + adotoa**2*(3*Hdot**2 + Hddd))/(a**3*adotoa**5)
+
+        adotoaPrimePrimePrimePrime = (-6*adotoa**6*Hdot - 15*Hdot**4 + 11*adotoa**5*Hdotdot + 25*adotoa*Hdot**2*Hdotdot - adotoa**4*(11*Hdot**2 + 6*Hddd) &
+                &- adotoa**2*(18*Hdot**3 + 4*Hdotdot**2 + 7*Hdot*Hddd) + adotoa**3*(24*Hdot*Hdotdot + Hdddd))/(a**4*adotoa**7)
+
+     !   adotoaPrimePrimePrime= (-(a**3._dl*(Omega_phi0*(24._dl + 26._dl*s + 9._dl*s**2._dl + s**3._dl)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 24._dl*Omega_tot)*adotoaPrime**3._dl) + &
+  !   &    3._dl*a**2._dl*adotoa*adotoaPrime*(adotoaPrime*(Omega_phi0*(2._dl + s)**2._dl*(3._dl + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12._dl*Omega_tot + 6._dl*a*Omega_tot_prime) + &
+  !   &       a*(Omega_phi0*(6._dl + 5._dl*s + s**2._dl)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6._dl*Omega_tot)*adotoaPrimePrime) - &
+  !   &    3._dl*a*adotoa**2._dl*(a*(Omega_phi0*(2._dl + s)**2._dl*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4._dl*Omega_tot + 2._dl*a*Omega_tot_prime)*adotoaPrimePrime + &
+  !   &       adotoaPrime*(4._dl*Omega_phi0*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8._dl*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 5._dl*Omega_phi0*s**2._dl*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**3._dl*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4._dl*Omega_tot + &
+   !  &          8._dl*a*Omega_tot_prime + 2._dl*a**2._dl*Omega_tot_primeprime)) + &
+   !  &    adotoa**3._dl*(2._dl*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 3._dl*Omega_phi0*s**2._dl*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**3._dl*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6._dl*a*Omega_tot_prime + 6._dl*a**2._dl*Omega_tot_primeprime + &
+  !   &       a**3._dl*Omega_tot_primeprimeprime))/(a**3._dl*adotoa**2._dl*(Omega_phi0*(2._dl + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 2._dl*Omega_tot))
+
+     !   adotoaPrimePrimePrimePrime =(a**4._dl*(Omega_phi0*(120._dl + 154._dl*s + 71._dl*s**2._dl + 14._dl*s**3._dl + s**4._dl)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 120._dl*Omega_tot)*adotoaPrime**4._dl - &
+   !  &    2._dl*a**3._dl*adotoa*adotoaPrime**2._dl*(2._dl*adotoaPrime*(Omega_phi0*(2._dl + s)**2._dl*(12._dl + 7._dl*s + s**2._dl)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 48._dl*Omega_tot + 24._dl*a*Omega_tot_prime) + &
+   !  &       3._dl*a*(Omega_phi0*(24._dl + 26._dl*s + 9._dl*s**2._dl + s**3._dl)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 24._dl*Omega_tot)*adotoaPrimePrime) + &
+   !  &    a**2*adotoa**2*(3._dl*a**2._dl*(Omega_phi0*(6._dl + 5._dl*s + s**2._dl)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6._dl*Omega_tot)*adotoaPrimePrime**2._dl + &
+   !  &       6._dl*adotoaPrime**2._dl*(12._dl*Omega_phi0*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 28._dl*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 23._dl*Omega_phi0*s**2._dl*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8._dl*Omega_phi0*s**3._dl*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + &
+   !  &          Omega_phi0*s**4*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*Omega_tot + 24*a*Omega_tot_prime + 6*a**2*Omega_tot_primeprime) + &
+   !  &       4*a*adotoaPrime*(3*(Omega_phi0*(2 + s)**2*(3 + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*Omega_tot + 6*a*Omega_tot_prime)*adotoaPrimePrime + &
+   !  &          a*(Omega_phi0*(6 + 5*s + s**2)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 6*Omega_tot)*adotoaPrimePrimePrime)) - &
+   !  &    2*a*adotoa**3*(a*(3*adotoaPrimePrime*(4*Omega_phi0*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 5*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4*Omega_tot + &
+   !  &             8*a*Omega_tot_prime + 2*a**2*Omega_tot_primeprime) + 2*a*(Omega_phi0*(2 + s)**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 4*Omega_tot + 2*a*Omega_tot_prime)*adotoaPrimePrimePrime) + &
+   !  &       2*adotoaPrime*(4*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 8*Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 5*Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**4*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*a*Omega_tot_prime + &
+   !  &          12*a**2*Omega_tot_primeprime + 2*a**3*Omega_tot_primeprimeprime)) + &
+   !  &    adotoa**4*(-2*Omega_phi0*s*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s - Omega_phi0*s**2*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 2*Omega_phi0*s**3*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + Omega_phi0*s**4*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 12*a**2*Omega_tot_primeprime + &
+    ! &       8*a**3*Omega_tot_primeprimeprime + a**4*Omega_tot_primeprimeprimeprime))/(a**4*adotoa**3*(Omega_phi0*(2 + s)*((a*eft_par_cache%h0_Mpc*adotoa)/adotoa)**s + 2*Omega_tot))
 
 
-          ! write(31, *) a, adotoa/eft_par_cache%h0_Mpc, adotoaPrime/eft_par_cache%h0_Mpc, adotoaPrimePrime/eft_par_cache%h0_Mpc, adotoaPrimePrimePrime/eft_par_cache%h0_Mpc, adotoaPrimePrimePrimePrime/eft_par_cache%h0_Mpc
-
+          ! write(31,*) a, adotoa/eft_par_cache%h0_Mpc, adotoaPrime/eft_par_cache%h0_Mpc, adotoaPrimePrime/eft_par_cache%h0_Mpc, adotoaPrimePrimePrime/eft_par_cache%h0_Mpc, adotoaPrimePrimePrimePrime/eft_par_cache%h0_Mpc
+          ! write(311, *) a, OLDadotoa/eft_par_cache%h0_Mpc, OLDadotoaPrime/eft_par_cache%h0_Mpc, OLDadotoaPrimePrime/eft_par_cache%h0_Mpc, OLDadotoaPrimePrimePrime/eft_par_cache%h0_Mpc, OLDadotoaPrimePrimePrimePrime/eft_par_cache%h0_Mpc
           if ( a == 0._dl ) then
               return
           else if ( adotoa  == 0._dl ) then
@@ -517,16 +667,16 @@ contains
                  &     (6._dl*adotoaPrime**2._dl*ChiP - 3._dl*adotoa*adotoaPrime*ChiPP + &
                  &       adotoa*(-3._dl*ChiP*adotoaPrimePrime + adotoa*ChiPPP)))/(8._dl*adotoa**4._dl*(-Chi)**2.5)
 
-           ! write(33, *) a, PhiPrime,PhiPrimePrime,PhiPrimePrimePrime,PhiPrimePrimePrimePrime
-           ! write(333, *) a,Chi/(-XDS), ChiP/(-XDS),ChiPP/(-XDS)
-           ! write(34, *) p, s, c2, c3, c4, c5
-           ! write(9003,*) Hds/eft_par_cache%h0_Mpc, XDS
+         !   write(33, *) a, PhiPrime,PhiPrimePrime,PhiPrimePrimePrime,PhiPrimePrimePrimePrime
+         !   write(333, *) a,Chi/(-XDS), ChiP/(-XDS),ChiPP/(-XDS)
+         !   write(34, *) p, s, c2, c3, c4, c5
+         !   write(9003,*) Hds/eft_par_cache%h0_Mpc, XDS
           !
 
          ! compute the background EFT functions:-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-          self%EFTOmega%y(ind) = (-2._dl*c4*adotoa**((2._dl*p*(2._dl + s))/s)*PhiPrime**((2._dl*p*(2._dl + s))/s))/((-1._dl)**((p*(2._dl + s))/s)*XDS**((p*(2._dl + s))/s))
+          self%EFTOmega%y(ind) = (-2._dl*c4*adotoa**((2._dl*p*(2._dl + s))/s)*PhiPrime**((2._dl*p*(2._dl + s))/s))/(XDS**((p*(2._dl + s))/s))
 
           self%EFTOmega%yp(ind) = (-4._dl*c4*p*(2._dl + s)*adotoa**(-1._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**(-1._dl + (2._dl*p*(2._dl + s))/s)*&
      &    (adotoa*PhiPrimePrime + PhiPrime*adotoaPrime))/(s*XDS**((p*(2._dl + s))/s))
@@ -576,36 +726,59 @@ contains
      &       PhiPrime*(2._dl*(s + 2._dl*p*(2._dl + s))*(-2._dl*c5*s + c4*p*(2._dl + s))*adotoaPrime + &
      &          a*c4*p*s*(2._dl + s)*adotoaPrimePrime)))/(s**2._dl*XDS**((3._dl*p*(1._dl + s))/s)*PhiPrime**2._dl)
 
-          self%EFTc%yp(ind)      =   (-4._dl*a**3._dl*c2*Hds**2._dl*p**2._dl*s**3._dl*XDS**(p*(2._dl + 3._dl/s))*adotoa**(1._dl + 2._dl*p)*PhiPrime**(2._dl + 2._dl*p)*PhiPrimePrime - &
-     &    Sqrt(2._dl)*a*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**(2._dl*(1._dl + p + p/s))*PhiPrime**(1._dl + (2._dl*p*(1._dl + s))/s)*&
-     &     (3._dl*s*PhiPrime**2._dl + a**2._dl*(-s + 2._dl*p*(1._dl + s))*PhiPrimePrime**2._dl + &
-     &       a*PhiPrime*(-6._dl*p*(1._dl + s)*PhiPrimePrime + a*s*PhiPrimePrimePrime)) - &
-     &    4._dl*XDS**(p*(2._dl + 1._dl/s))*adotoa**(3._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**((2._dl*p*(2._dl + s))/s)*&
-     &     (2._dl*s*(28._dl*c5*s**2._dl - c4*p*(2._dl + s)*(-s + 6._dl*p*(2._dl + s)))*PhiPrime**3._dl - &
-     &       2._dl*a**3._dl*c4*p*(2._dl + s)*(s**2._dl - 3._dl*p*s*(2._dl + s) + 2._dl*p**2._dl*(2._dl + s)**2._dl)*PhiPrimePrime**3._dl - &
-     &       a**2._dl*p*(2._dl + s)*(-s + 2._dl*p*(2._dl + s))*PhiPrime*PhiPrimePrime*&
-     &        ((-3._dl*c4*s - 8._dl*c5*s + 4._dl*c4*p*(2._dl + s))*PhiPrimePrime + 3._dl*a*c4*s*PhiPrimePrimePrime) + &
-     &       a*p*(2._dl + s)*PhiPrime**2._dl*((-64._dl*c5*s**2._dl + c4*(-3._dl*s**2._dl + 2._dl*p*s*(2._dl + s) + 12._dl*p**2._dl*(2._dl + s)**2._dl))*PhiPrimePrime - &
-     &          a*s*((-3._dl*c4*s - 8._dl*c5*s + 4._dl*c4*p*(2._dl + s))*PhiPrimePrimePrime + a*c4*s*PhiPrimePrimePrimePrime))) - &
-     &    4._dl*a**3._dl*c2*Hds**2._dl*p**2._dl*s**3._dl*XDS**(p*(2._dl + 3._dl/s))*adotoa**(2._dl*p)*PhiPrime**(3._dl + 2._dl*p)*adotoaPrime - &
-     &    2._dl*Sqrt(2._dl)*a**3._dl*c3*Hds*p*s*(1._dl + s)*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**((2._dl*p*(1._dl + s))/s)*&
-     &     PhiPrime**(3._dl + (2._dl*p*(1._dl + s))/s)*adotoaPrime**2._dl + &
-     &    16._dl*a**3._dl*c4*p**3._dl*(2._dl + s)**3._dl*XDS**(p*(2._dl + 1._dl/s))*adotoa**((2._dl*p*(2._dl + s))/s)*PhiPrime**(3._dl + (2._dl*p*(2._dl + s))/s)*&
-     &     adotoaPrime**3._dl + Sqrt(2._dl)*a**2._dl*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**(1._dl + (2._dl*p*(1._dl + s))/s)*&
-     &     PhiPrime**(2._dl*(1._dl + p + p/s))*(-(a*(s + 4._dl*p*(1._dl + s))*PhiPrimePrime*adotoaPrime) + &
-     &       PhiPrime*(3._dl*(s + 2._dl*p*(1._dl + s))*adotoaPrime - a*s*adotoaPrimePrime)) + &
-     &    4._dl*a**2._dl*XDS**(p*(2._dl + 1._dl/s))*adotoa**(1._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**(2._dl + (2._dl*p*(2._dl + s))/s)*adotoaPrime*&
-     &     (a*c4*p*(2._dl + s)*(s**2._dl + 6._dl*p*s*(2._dl + s) + 12._dl*p**2._dl*(2._dl + s)**2._dl)*PhiPrimePrime*adotoaPrime + &
-     &       PhiPrime*((s + 2._dl*p*(2._dl + s))*(-4._dl*c5*s*(s + 2._dl*p*(2._dl + s)) + c4*p*(2._dl + s)*(-s + 4._dl*p*(2._dl + s)))*adotoaPrime + &
-     &          a*c4*p*s*(2._dl + s)*(s + 6._dl*p*(2._dl + s))*adotoaPrimePrime)) + &
-     &    4._dl*a*XDS**(p*(2._dl + 1._dl/s))*adotoa**(2._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**(1._dl + (2._dl*p*(2._dl + s))/s)*&
-     &     (3._dl*a**2._dl*c4*p*(2._dl + s)*(-s**2._dl + 4._dl*p**2._dl*(2._dl + s)**2._dl)*PhiPrimePrime**2._dl*adotoaPrime + &
-     &       a*p*(2._dl + s)*PhiPrime*(3._dl*a*c4*s*(s + 2._dl*p*(2._dl + s))*PhiPrimePrimePrime*adotoaPrime + &
-     &          PhiPrimePrime*(2._dl*(-4._dl*c5*s*(3._dl*s + 4._dl*p*(2._dl + s)) + c4*(-3._dl*s**2._dl + 8._dl*p**2._dl*(2._dl + s)**2._dl))*adotoaPrime + &
-     &             a*c4*s*(s + 6._dl*p*(2._dl + s))*adotoaPrimePrime)) - &
-     &       PhiPrime**2._dl*((-4._dl*c5*s**2._dl*(15._dl*s + 16._dl*p*(2._dl + s)) + c4*p*(2._dl + s)*(-3._dl*s**2._dl + 14._dl*p*s*(2._dl + s) + 12._dl*p**2._dl*(2._dl + s)**2._dl))*&
-     &           adotoaPrime + a*s*((4._dl*c5*s*(s + 2._dl*p*(2._dl + s)) - c4*p*(2._dl + s)*(-s + 4._dl*p*(2._dl + s)))*adotoaPrimePrime - &
-     &             a*c4*p*s*(2._dl + s)*adotoaPrimePrimePrime))))/(2._dl*s**3._dl*XDS**((3._dl*p*(1._dl + s))/s)*PhiPrime**3._dl)
+          self%EFTc%yp(ind)      =    (-4*a**3*c2*Hds**2*p**2*s**3*XDS**(p*(2 + 3/s))*adotoa**(1 + 2*p)*PhiPrime**(2 + 2*p)*PhiPrimePrime - &
+     &    Sqrt(2._dl)*a*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**(2*(1 + p + p/s))*PhiPrime**(1 + (2*p*(1 + s))/s)*&
+     &     (3*s*PhiPrime**2 + a**2*(-s + 2*p*(1 + s))*PhiPrimePrime**2 + a*PhiPrime*(-6*p*(1 + s)*PhiPrimePrime + a*s*PhiPrimePrimePrime)) - &
+     &    4*XDS**(p*(2 + 1/s))*adotoa**(3 + (2*p*(2 + s))/s)*PhiPrime**((2*p*(2 + s))/s)*&
+     &     (2*s*(28*c5*s**2 - c4*p*(2 + s)*(-s + 6*p*(2 + s)))*PhiPrime**3 - 2*a**3*c4*p*(2 + s)*(s**2 - 3*p*s*(2 + s) + 2*p**2*(2 + s)**2)*PhiPrimePrime**3 - &
+     &       a**2*p*(2 + s)*(-s + 2*p*(2 + s))*PhiPrime*PhiPrimePrime*((-3*c4*s - 8*c5*s + 4*c4*p*(2 + s))*PhiPrimePrime + 3*a*c4*s*PhiPrimePrimePrime) + &
+     &       a*p*(2 + s)*PhiPrime**2*((-64*c5*s**2 + c4*(-3*s**2 + 2*p*s*(2 + s) + 12*p**2*(2 + s)**2))*PhiPrimePrime - &
+     &          a*s*((-3*c4*s - 8*c5*s + 4*c4*p*(2 + s))*PhiPrimePrimePrime + a*c4*s*PhiPrimePrimePrimePrime))) - &
+     &    4*a**3*c2*Hds**2*p**2*s**3*XDS**(p*(2 + 3/s))*adotoa**(2*p)*PhiPrime**(3 + 2*p)*adotoaPrime - &
+     &    2*Sqrt(2._dl)*a**3*c3*Hds*p*s*(1 + s)*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**((2*p*(1 + s))/s)*PhiPrime**(3 + (2*p*(1 + s))/s)*adotoaPrime**2 + &
+     &    16*a**3*c4*p**3*(2 + s)**3*XDS**(p*(2 + 1/s))*adotoa**((2*p*(2 + s))/s)*PhiPrime**(3 + (2*p*(2 + s))/s)*adotoaPrime**3 + &
+     &    Sqrt(2._dl)*a**2*c3*Hds*s*(-s + 2*p*(1 + s))*XDS**((2*p*(1 + s))/s)*adotoa**(1 + (2*p*(1 + s))/s)*PhiPrime**(2*(1 + p + p/s))*&
+     &     (-(a*(s + 4*p*(1 + s))*PhiPrimePrime*adotoaPrime) + PhiPrime*(3*(s + 2*p*(1 + s))*adotoaPrime - a*s*adotoaPrimePrime)) + &
+     &    4*a**2*XDS**(p*(2 + 1/s))*adotoa**(1 + (2*p*(2 + s))/s)*PhiPrime**(2 + (2*p*(2 + s))/s)*adotoaPrime*&
+     &     (a*c4*p*(2 + s)*(s**2 + 6*p*s*(2 + s) + 12*p**2*(2 + s)**2)*PhiPrimePrime*adotoaPrime + &
+     &       PhiPrime*((s + 2*p*(2 + s))*(-4*c5*s*(s + 2*p*(2 + s)) + c4*p*(2 + s)*(-s + 4*p*(2 + s)))*adotoaPrime + a*c4*p*s*(2 + s)*(s + 6*p*(2 + s))*adotoaPrimePrime)) + &
+     &    4*a*XDS**(p*(2 + 1/s))*adotoa**(2 + (2*p*(2 + s))/s)*PhiPrime**(1 + (2*p*(2 + s))/s)*&
+     &     (3*a**2*c4*p*(2 + s)*(-s**2 + 4*p**2*(2 + s)**2)*PhiPrimePrime**2*adotoaPrime + &
+     &       a*p*(2 + s)*PhiPrime*(3*a*c4*s*(s + 2*p*(2 + s))*PhiPrimePrimePrime*adotoaPrime + &
+     &          PhiPrimePrime*(2*(-4*c5*s*(3*s + 4*p*(2 + s)) + c4*(-3*s**2 + 8*p**2*(2 + s)**2))*adotoaPrime + a*c4*s*(s + 6*p*(2 + s))*adotoaPrimePrime)) - &
+     &       PhiPrime**2*((-4*c5*s**2*(15*s + 16*p*(2 + s)) + c4*p*(2 + s)*(-3*s**2 + 14*p*s*(2 + s) + 12*p**2*(2 + s)**2))*adotoaPrime + &
+     &          a*s*((4*c5*s*(s + 2*p*(2 + s)) - c4*p*(2 + s)*(-s + 4*p*(2 + s)))*adotoaPrimePrime - a*c4*p*s*(2 + s)*adotoaPrimePrimePrime))))/(2.*s**3*XDS**((3*p*(1 + s))/s)*PhiPrime**3) 
+
+!(-4._dl*a**3._dl*c2*Hds**2._dl*p**2._dl*s**3._dl*XDS**(p*(2._dl + 3._dl/s))*adotoa**(1._dl + 2._dl*p)*PhiPrime**(2._dl + 2._dl*p)*PhiPrimePrime - &
+ !    &    Sqrt(2._dl)*a*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**(2._dl*(1._dl + p + p/s))*PhiPrime**(1._dl + (2._dl*p*(1._dl + s))/s)*&
+  !   &     (3._dl*s*PhiPrime**2._dl + a**2._dl*(-s + 2._dl*p*(1._dl + s))*PhiPrimePrime**2._dl + &
+   !  &       a*PhiPrime*(-6._dl*p*(1._dl + s)*PhiPrimePrime + a*s*PhiPrimePrimePrime)) - &
+    ! &    4._dl*XDS**(p*(2._dl + 1._dl/s))*adotoa**(3._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**((2._dl*p*(2._dl + s))/s)*&
+     !&     (2._dl*s*(28._dl*c5*s**2._dl - c4*p*(2._dl + s)*(-s + 6._dl*p*(2._dl + s)))*PhiPrime**3._dl - &
+!     &       2._dl*a**3._dl*c4*p*(2._dl + s)*(s**2._dl - 3._dl*p*s*(2._dl + s) + 2._dl*p**2._dl*(2._dl + s)**2._dl)*PhiPrimePrime**3._dl - &
+ !    &       a**2._dl*p*(2._dl + s)*(-s + 2._dl*p*(2._dl + s))*PhiPrime*PhiPrimePrime*&
+  !   &        ((-3._dl*c4*s - 8._dl*c5*s + 4._dl*c4*p*(2._dl + s))*PhiPrimePrime + 3._dl*a*c4*s*PhiPrimePrimePrime) + &
+  !   &       a*p*(2._dl + s)*PhiPrime**2._dl*((-64._dl*c5*s**2._dl + c4*(-3._dl*s**2._dl + 2._dl*p*s*(2._dl + s) + 12._dl*p**2._dl*(2._dl + s)**2._dl))*PhiPrimePrime - &
+  !   &          a*s*((-3._dl*c4*s - 8._dl*c5*s + 4._dl*c4*p*(2._dl + s))*PhiPrimePrimePrime + a*c4*s*PhiPrimePrimePrimePrime))) - &
+  !   &    4._dl*a**3._dl*c2*Hds**2._dl*p**2._dl*s**3._dl*XDS**(p*(2._dl + 3._dl/s))*adotoa**(2._dl*p)*PhiPrime**(3._dl + 2._dl*p)*adotoaPrime - &
+  !   &    2._dl*Sqrt(2._dl)*a**3._dl*c3*Hds*p*s*(1._dl + s)*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**((2._dl*p*(1._dl + s))/s)*&
+  !   &     PhiPrime**(3._dl + (2._dl*p*(1._dl + s))/s)*adotoaPrime**2._dl + &
+  !   &    16._dl*a**3._dl*c4*p**3._dl*(2._dl + s)**3._dl*XDS**(p*(2._dl + 1._dl/s))*adotoa**((2._dl*p*(2._dl + s))/s)*PhiPrime**(3._dl + (2._dl*p*(2._dl + s))/s)*&
+  !   &     adotoaPrime**3._dl + Sqrt(2._dl)*a**2._dl*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**(1._dl + (2._dl*p*(1._dl + s))/s)*&
+  !   &     PhiPrime**(2._dl*(1._dl + p + p/s))*(-(a*(s + 4._dl*p*(1._dl + s))*PhiPrimePrime*adotoaPrime) + &
+  !   &       PhiPrime*(3._dl*(s + 2._dl*p*(1._dl + s))*adotoaPrime - a*s*adotoaPrimePrime)) + &
+  !   &    4._dl*a**2._dl*XDS**(p*(2._dl + 1._dl/s))*adotoa**(1._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**(2._dl + (2._dl*p*(2._dl + s))/s)*adotoaPrime*&
+  !   &     (a*c4*p*(2._dl + s)*(s**2._dl + 6._dl*p*s*(2._dl + s) + 12._dl*p**2._dl*(2._dl + s)**2._dl)*PhiPrimePrime*adotoaPrime + &
+  !   &       PhiPrime*((s + 2._dl*p*(2._dl + s))*(-4._dl*c5*s*(s + 2._dl*p*(2._dl + s)) + c4*p*(2._dl + s)*(-s + 4._dl*p*(2._dl + s)))*adotoaPrime + &
+  !   &          a*c4*p*s*(2._dl + s)*(s + 6._dl*p*(2._dl + s))*adotoaPrimePrime)) + &
+  !   &    4._dl*a*XDS**(p*(2._dl + 1._dl/s))*adotoa**(2._dl + (2._dl*p*(2._dl + s))/s)*PhiPrime**(1._dl + (2._dl*p*(2._dl + s))/s)*&
+  !   &     (3._dl*a**2._dl*c4*p*(2._dl + s)*(-s**2._dl + 4._dl*p**2._dl*(2._dl + s)**2._dl)*PhiPrimePrime**2._dl*adotoaPrime + &
+  !   &       a*p*(2._dl + s)*PhiPrime*(3._dl*a*c4*s*(s + 2._dl*p*(2._dl + s))*PhiPrimePrimePrime*adotoaPrime + &
+  !   &          PhiPrimePrime*(2._dl*(-4._dl*c5*s*(3._dl*s + 4._dl*p*(2._dl + s)) + c4*(-3._dl*s**2._dl + 8._dl*p**2._dl*(2._dl + s)**2._dl))*adotoaPrime + &
+  !   &             a*c4*s*(s + 6._dl*p*(2._dl + s))*adotoaPrimePrime)) - &
+  !   &       PhiPrime**2._dl*((-4._dl*c5*s**2._dl*(15._dl*s + 16._dl*p*(2._dl + s)) + c4*p*(2._dl + s)*(-3._dl*s**2._dl + 14._dl*p*s*(2._dl + s) + 12._dl*p**2._dl*(2._dl + s)**2._dl))*&
+   !  &           adotoaPrime + a*s*((4._dl*c5*s*(s + 2._dl*p*(2._dl + s)) - c4*p*(2._dl + s)*(-s + 4._dl*p*(2._dl + s)))*adotoaPrimePrime - &
+    ! &             a*c4*p*s*(2._dl + s)*adotoaPrimePrimePrime))))/(2._dl*s**3._dl*XDS**((3._dl*p*(1._dl + s))/s)*PhiPrime**3._dl)
 
           self%EFTLambda%yp(ind) =  (-2._dl*a**3._dl*c2*Hds**2._dl*p*s**3._dl*XDS**(p*(2._dl + 3._dl/s))*adotoa**(1._dl + 2._dl*p)*PhiPrime**(2._dl + 2._dl*p)*PhiPrimePrime - &
      &    Sqrt(2._dl)*a**3._dl*c3*Hds*s*(-s + 2._dl*p*(1._dl + s))*XDS**((2._dl*p*(1._dl + s))/s)*adotoa**(2._dl*(1._dl + p + p/s))*PhiPrime**(1._dl + (2._dl*p*(1._dl + s))/s)*&
@@ -730,10 +903,10 @@ contains
  !         self%EFTgamma5%yp(ind)  =  1/2*self%EFTgamma3%yp(ind)
 
 
-           ! write(35, *) a, self%EFTOmega%y(ind), self%EFTOmega%yp(ind), self%EFTc%y(ind), self%EFTc%yp(ind), self%EFTLambda%y(ind), self%EFTLambda%yp(ind)
-           ! write(36, *) a, self%EFTgamma1%y(ind), self%EFTgamma2%y(ind), self%EFTgamma3%y(ind), self%EFTgamma4%y(ind)
-           ! write(37, *) a, self%EFTgamma1%yp(ind), self%EFTgamma2%yp(ind), self%EFTgamma3%yp(ind), self%EFTgamma4%yp(ind), self%EFTgamma4%ypp(ind)
-           !
+        !    write(35, *) a, self%EFTOmega%y(ind), self%EFTOmega%yp(ind), self%EFTc%y(ind), self%EFTc%yp(ind), self%EFTLambda%y(ind), self%EFTLambda%yp(ind)
+        !    write(36, *) a, self%EFTgamma1%y(ind), self%EFTgamma2%y(ind), self%EFTgamma3%y(ind), self%EFTgamma4%y(ind)
+        !    write(37, *) a, self%EFTgamma1%yp(ind), self%EFTgamma2%yp(ind), self%EFTgamma3%yp(ind), self%EFTgamma4%yp(ind), self%EFTgamma4%ypp(ind)
+           
         ! ------------------------------------------------------------------------------------------------------------------------------------------------------------------
           end subroutine
 
